@@ -10,4 +10,4 @@ build-eclipse
 .idea
 *.class
 target/
-.idea
+*.iml
