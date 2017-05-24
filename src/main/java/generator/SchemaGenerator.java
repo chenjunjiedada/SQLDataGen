@@ -6,7 +6,7 @@ import java.util.List;
 
 public class SchemaGenerator {
     private List<RowGenerator> rgs = new ArrayList<RowGenerator>();
-    public int scale = 1;
+    public long scale = 1;
 
     public int addRowGenerator(RowGenerator rg) {
         rgs.add(rg);
@@ -30,7 +30,9 @@ public class SchemaGenerator {
         String sql = "create table test (a int, b STRING);";
         try {
             SchemaGenerator sg = new SchemaGenerator();
-            sg.addRowGenerator(new RowGenerator(sql));
+            RowGenerator rg = new RowGenerator(sql);
+            rg.setExpectedRows(sg.scale * 1024 * 1024*1024 / rg.getBytesInRow());
+            sg.addRowGenerator(rg);
             sg.generateData("/tmp/testdata");
         } catch (Exception e) {
             e.printStackTrace();

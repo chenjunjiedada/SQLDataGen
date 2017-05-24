@@ -9,7 +9,7 @@ import random.DataRandom;
  */
 public class ColumnGenerator {
 
-    public DataRandom random;
+    public DataRandom random = new DataRandom();
     public String type;
     public String name;
 
@@ -19,11 +19,19 @@ public class ColumnGenerator {
     }
 
     public String nextValue() {
-        if (type.equals("Integer") || type.equals("Long")) {
-            random.nextLong(10);
-        } else if (type.equals("Double") || type.equals("Float")) {
+        if (type.toLowerCase().equals("int") || type.toLowerCase().equals("long")) {
+            // TODO: decide the long scale.
+            return random.nextLong(10);
+        } else if (type.toLowerCase().equals("double") || type.toLowerCase().equals("float")) {
             return "";
+        } else if (type.toLowerCase().startsWith("decimal")) {
+            // TODO, parse the scale and precision
+            return random.nextDecimal(10, 2);
+        } else if (type.toLowerCase().equals("string")) {
+            return random.nextString();
         }
+
         return "";
+
     }
 }

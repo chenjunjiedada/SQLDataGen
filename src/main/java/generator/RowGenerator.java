@@ -8,7 +8,9 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
+import java.io.BufferedWriter;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,10 +54,13 @@ public class RowGenerator {
 
         OutputStream os = hdfs.create(file);
 
+        BufferedWriter br = new BufferedWriter( new OutputStreamWriter( os, "UTF-8" ) );
+
         for (long i = 0; i < expectedRows; i++) {
-            os.write(nextRow().getBytes());
+            br.write(nextRow()+"\n");
         }
-        os.close();
+        br.flush();
+        br.close();
         hdfs.close();
         return 0;
     }
