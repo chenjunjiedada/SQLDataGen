@@ -27,7 +27,7 @@ public class SchemaGenerator {
     }
 
     public static void main(String[] args) {
-        String sql = "create table test (a int, b STRING);";
+        String sql = "create table test (a int, b STRING, c decimal(7,2), d timestamp);";
         try {
             SchemaGenerator sg = new SchemaGenerator();
             RowGenerator rg = new RowGenerator(sql);

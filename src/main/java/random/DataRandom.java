@@ -1,6 +1,7 @@
 package random;
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang.math.RandomUtils;
 import org.w3c.dom.ranges.RangeException;
 
 import java.io.*;
@@ -44,6 +45,18 @@ public class DataRandom {
 
     public String nextLong(int scale) {
         return RandomStringUtils.random(scale, false, true);
+    }
+
+    public String nextLong() {
+        Random r = new Random();
+        return Long.toString(r.nextLong());
+    }
+
+    public String nextFloat(){
+        return Float.toString( RandomUtils.nextFloat());
+    }
+    public String nextDouble(){
+        return Double.toString(RandomUtils.nextDouble());
     }
 
     public String nextDecimal(int scale, int precision) {
