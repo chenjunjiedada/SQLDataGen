@@ -27,7 +27,7 @@ public class RowGenerator {
         this.createTableStat = (CreateTable)st;
 
         for(ColumnDefinition columnDefinition: createTableStat.getColumnDefinitions()) {
-            ColumnGenerator cg = new ColumnGenerator(columnDefinition.getColumnName(), columnDefinition.getColDataType());
+            ColumnGenerator cg = new ColumnGenerator(columnDefinition);
             cgs.add(cg);
         }
     }
