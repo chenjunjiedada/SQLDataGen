@@ -14,7 +14,6 @@ import java.util.Random;
  * Created by root on 5/24/17.
  */
 public class ColumnGenerator {
-
     public final int defaultScale = 10;
     public final int defaultPrecision = 6;
 
@@ -23,8 +22,14 @@ public class ColumnGenerator {
     public ColumnDefinition colDesc;
     public double nullProportion = 0.0;
 
+    public ColumnGenerator () {
+
+    }
     public ColumnGenerator (ColumnDefinition colDescriptor) {
         this.colDesc = colDescriptor;
+    }
+    public void setColDesc(ColumnDefinition cd) {
+        this.colDesc = cd;
     }
 
     public void setNullProportion(double proportion) throws InvalidParameterException {
@@ -35,6 +40,9 @@ public class ColumnGenerator {
         }
     }
 
+    public boolean isPartitionColumn(){
+        return false;
+    }
 
     /*
         Generate random value in string according to column type.
