@@ -51,6 +51,9 @@ public class ColumnGenerator {
     public String nextValue() {
         if (nullProportion > 0.0) {
             //TODO
+            if(Math.random()<nullProportion){
+                return null;
+            }
         }
         String type = colDesc.getColDataType().getDataType();
         if (type.toLowerCase().equals("int") || type.toLowerCase().equals("long")) {
