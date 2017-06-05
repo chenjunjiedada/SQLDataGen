@@ -47,12 +47,8 @@ public class RowGenerator {
 
       cd.setColDataType(columnType);
 
-
-
       cd.setColumnName(partitionColumnName);
       partitionGenerator.setColDesc(cd);
-
-
     }
 
 
@@ -84,11 +80,11 @@ public class RowGenerator {
     return cgs.size() * 16;
   }
 
-  public int generateData(String uri) throws Exception {
+  public int generateData(Properties props) throws Exception {
     Configuration conf = new Configuration();
-    conf.set("fs.default.name", "hdfs://bdpe611n1:9001");
+    conf.set("fs.default.name", props.getProperty("datagen.fs.host"));
     FileSystem hdfs = FileSystem.get(conf);
-    Path file = new Path(uri);
+    Path file = new Path(props.getProperty("datagen.output.dir"));
 
     if (hdfs.exists(file)) {
       hdfs.delete(file, true);

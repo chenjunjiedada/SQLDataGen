@@ -1,9 +1,5 @@
 package generator;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hive.ql.lib.Node;
-import org.apache.hadoop.hive.ql.parse.ASTNode;
-import org.apache.hadoop.hive.ql.parse.ParseDriver;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -26,10 +22,10 @@ public class SchemaGenerator {
   }
 
 
-  public void generateData(String dir) throws Exception {
+  public void generateData(Properties props) throws Exception {
     // how to set expected rows for each table
     for (RowGenerator rg : rgs) {
-      rg.generateData(dir);
+      rg.generateData(props);
     }
   }
 
@@ -57,16 +53,14 @@ public class SchemaGenerator {
       "apn_oi STRING, card_id STRING, time_out DECIMAL(1,0), on_time TIMESTAMP, load_id DECIMAL(22,0) )";
 
 
+    if (args.length != 1) {
+      System.out.println("Usage: java datagen.jar sql");
+      System.exit(-1);
+    } else {
+      sql = args[0];
+      System.out.println(sql);
+    }
     try {
-/*      ParseDriver pd = new ParseDriver();
-      ASTNode tree = pd.parse(sql);
-
-      List<Node> nodes = tree.getChildren();
-
-      for (Node node : nodes) {
-        if (node instanceof )
-      }*/
-
       SchemaGenerator sg = new SchemaGenerator();
       RowGenerator rg = new RowGenerator(sql);
       rg.setExpectedRows(sg.scale * 1024 * 1024 / rg.getBytesInRow());
@@ -75,7 +69,7 @@ public class SchemaGenerator {
       FileInputStream fis = new FileInputStream(project_root + "/conf/datagen.properties");
       Properties props = new Properties();
       props.load(fis);
-      sg.generateData(props.getProperty("datagen.output.dir"));
+      sg.generateData(props);
       fis.close();
     } catch (Exception e) {
       e.printStackTrace();
