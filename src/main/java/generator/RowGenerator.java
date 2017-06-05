@@ -9,12 +9,11 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
-import java.io.BufferedWriter;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 public class RowGenerator {
   private long expectedRows = 1;
@@ -67,6 +66,8 @@ public class RowGenerator {
 
     for (ColumnDefinition columnDefinition : createTableStat.getColumnDefinitions()) {
       ColumnGenerator cg = new ColumnGenerator(columnDefinition);
+      String columnname = columnDefinition.getColumnName();
+      cg.setNullProportion(Double.parseDouble(getpropertyFromfile("datagen.column.null.proportion")));
       cgs.add(cg);
     }
 
@@ -114,4 +115,15 @@ public class RowGenerator {
     }
     return output;
   }
+
+  public String getpropertyFromfile(String property_name) throws IOException {
+    String project_root = System.getProperty("user.dir");
+    FileInputStream fis = new FileInputStream(project_root + "/conf/datagen.properties");
+    Properties props = new Properties();
+    props.load(fis);
+    String property = props.getProperty(property_name);
+    fis.close();
+    return property;
+  }
+
 }
