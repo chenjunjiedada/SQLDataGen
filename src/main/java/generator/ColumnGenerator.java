@@ -52,7 +52,7 @@ public class ColumnGenerator {
         if (nullProportion > 0.0) {
             //TODO
             if(Math.random()<nullProportion){
-                return null;
+                return "";
             }
         }
         String type = colDesc.getColDataType().getDataType();
@@ -62,8 +62,14 @@ public class ColumnGenerator {
             return random.nextDouble();
         } else if (type.toLowerCase().startsWith("decimal")) {
             List<String> params = colDesc.getColDataType().getArgumentsStringList();
-            int scale = Integer.getInteger(params.get(0), defaultScale);
-            int precision = Integer.getInteger(params.get(1), defaultPrecision);
+            Integer scale = Integer.parseInt(params.get(0));
+            Integer precision = Integer.parseInt(params.get(1));
+            if(scale==null){
+                scale=defaultScale;
+            }
+            if(precision==null){
+                precision=defaultPrecision;
+            }
             return random.nextDecimal(scale, precision);
         } else if (type.toLowerCase().equals("string")) {
             return random.nextString();
