@@ -10,7 +10,6 @@ import java.util.Properties;
 public class SchemaGenerator {
   private List<RowGenerator> rgs = new ArrayList<RowGenerator>();
   public long scale = 1;
-
   public int addRowGenerator(RowGenerator rg) {
     rgs.add(rg);
     return 0;
@@ -58,11 +57,11 @@ public class SchemaGenerator {
       System.exit(-1);
     } else {
       sql = args[0];
-      System.out.println(sql);
+      System.out.println(sql_841);
     }
     try {
       SchemaGenerator sg = new SchemaGenerator();
-      RowGenerator rg = new RowGenerator(sql);
+      RowGenerator rg = new RowGenerator(sql_841);
       rg.setExpectedRows(sg.scale * 1024 * 1024 / rg.getBytesInRow());
       sg.addRowGenerator(rg);
       String project_root = System.getProperty("user.dir");
