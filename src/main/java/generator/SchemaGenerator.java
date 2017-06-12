@@ -60,14 +60,15 @@ public class SchemaGenerator {
       System.out.println(sql_841);
     }
     try {
-      SchemaGenerator sg = new SchemaGenerator();
-      RowGenerator rg = new RowGenerator(sql_841);
-      rg.setExpectedRows(sg.scale * 1024 * 1024 / rg.getBytesInRow());
-      sg.addRowGenerator(rg);
       String project_root = System.getProperty("user.dir");
       FileInputStream fis = new FileInputStream(project_root + "/conf/datagen.properties");
       Properties props = new Properties();
       props.load(fis);
+      SchemaGenerator sg = new SchemaGenerator();
+      sg.setScale(Integer.parseInt(props.getProperty("datagen.scale")));
+      RowGenerator rg = new RowGenerator(sql_841);
+      rg.setExpectedRows(sg.scale * 1024 * 1024 / rg.getBytesInRow());
+      sg.addRowGenerator(rg);
       sg.generateData(props);
       fis.close();
     } catch (Exception e) {
