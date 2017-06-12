@@ -33,8 +33,8 @@ public class SchemaGenerator {
     String sql = "create table test (a int, b STRING, c decimal(7,2)) PARTITIONED BY (d decimal(5,0))";
 
     String sql_841 = "create TABLE tbl_data_event_1d ( " +
-      "record_id DECIMAL(23,0), " +
-      "cdr_id STRING, location_code DECIMAL(6,0), system_id DECIMAL(5,0), clue_id STRING, hit_element STRING, carrier_code DECIMAL(2,0), " +
+      "record_id DECIMAL(23,0) not null, " +
+      "cdr_id STRING, location_code DECIMAL(6,0) not null, system_id DECIMAL(5,0), clue_id STRING, hit_element STRING, carrier_code DECIMAL(2,0), " +
       "device_id STRING, cap_time TIMESTAMP, data_character STRING, netcell_id STRING, client_mac STRING, server_mac STRING, tunnel_type STRING, " +
       "tunnel_ip_client STRING, tunnel_ip_server STRING, tunnel_id_client STRING, tunnel_id_server STRING, side_one_tunnel_id STRING, " +
       "side_two_tunnel_id STRING, client_ip STRING, server_ip STRING, trans_protocol STRING, client_port DECIMAL(5,0), server_port DECIMAL(5,0), " +
@@ -51,14 +51,6 @@ public class SchemaGenerator {
       "DECIMAL(6,0), com_over_cause DECIMAL(6,0), roam_type DECIMAL(1,0), sgsn_ad STRING, ggsn_ad STRING, pdp_ad STRING, apn_ni STRING, " +
       "apn_oi STRING, card_id STRING, time_out DECIMAL(1,0), on_time TIMESTAMP, load_id DECIMAL(22,0) )";
 
-
-    if (args.length != 1) {
-      System.out.println("Usage: java datagen.jar sql");
-      System.exit(-1);
-    } else {
-      sql = args[0];
-      System.out.println(sql_841);
-    }
     try {
       SchemaGenerator sg = new SchemaGenerator();
       RowGenerator rg = new RowGenerator(sql_841);

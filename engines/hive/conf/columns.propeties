@@ -1,0 +1,5 @@
+# Define column properties, including null proportion, distinct proportion.
+
+oppo_num.null.proportion 0.05
+user_num.distinct.proportion 0.05
+

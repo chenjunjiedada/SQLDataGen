@@ -1,18 +1,10 @@
 package generator;
 
-import net.sf.jsqlparser.statement.alter.AlterExpression;
-import net.sf.jsqlparser.statement.create.table.ColDataType;
 import net.sf.jsqlparser.statement.create.table.ColumnDefinition;
-import org.apache.commons.lang.math.RandomUtils;
 import random.DataRandom;
-
 import java.security.InvalidParameterException;
 import java.util.List;
-import java.util.Random;
 
-/**
- * Created by root on 5/24/17.
- */
 public class ColumnGenerator {
     public final int defaultScale = 10;
     public final int defaultPrecision = 6;
@@ -49,35 +41,31 @@ public class ColumnGenerator {
         It also has to consider the null proportion.
      */
     public String nextValue() {
-        if (nullProportion > 0.0) {
-            //TODO
-            if(Math.random()<nullProportion){
-                return "";
-            }
-        }
-        String type = colDesc.getColDataType().getDataType();
-        if (type.toLowerCase().equals("int") || type.toLowerCase().equals("long")) {
-            return random.nextLong();
-        } else if (type.toLowerCase().equals("double") || type.toLowerCase().equals("float")) {
-            return random.nextDouble();
-        } else if (type.toLowerCase().startsWith("decimal")) {
-            List<String> params = colDesc.getColDataType().getArgumentsStringList();
-            Integer scale = Integer.parseInt(params.get(0));
-            Integer precision = Integer.parseInt(params.get(1));
-            if(scale==null){
-                scale=defaultScale;
-            }
-            if(precision==null){
-                precision=defaultPrecision;
-            }
-            return random.nextDecimal(scale, precision);
-        } else if (type.toLowerCase().equals("string")) {
-            return random.nextString();
-        } else if (type.toLowerCase().equals("timestamp")) {
-            return random.nextTimestamp();
-        }
+      if(Math.random() < nullProportion) return "";
 
-        return "";
+      String type = colDesc.getColDataType().getDataType();
+      if (type.toLowerCase().equals("int") || type.toLowerCase().equals("long")) {
+        return random.nextLong();
+      } else if (type.toLowerCase().equals("double") || type.toLowerCase().equals("float")) {
+        return random.nextDouble();
+      } else if (type.toLowerCase().startsWith("decimal")) {
+        List<String> params = colDesc.getColDataType().getArgumentsStringList();
+        Integer scale = Integer.parseInt(params.get(0));
+        Integer precision = Integer.parseInt(params.get(1));
+        if (scale == null) {
+          scale = defaultScale;
+        }
+        if (precision == null) {
+          precision = defaultPrecision;
+        }
+        return random.nextDecimal(scale, precision);
+      } else if (type.toLowerCase().equals("string")) {
+        return random.nextString();
+      } else if (type.toLowerCase().equals("timestamp")) {
+        return random.nextTimestamp();
+      }
+
+      return "";
 
     }
 }
