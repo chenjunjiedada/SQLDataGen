@@ -8,6 +8,7 @@ import java.util.Properties;
 
 
 public class SchemaGenerator {
+  public final int MB = 1024 * 1024;
   private List<RowGenerator> rgs = new ArrayList<RowGenerator>();
   public long scale = 1;
   public int addRowGenerator(RowGenerator rg) {
@@ -60,8 +61,8 @@ public class SchemaGenerator {
       FileInputStream fis = new FileInputStream(project_root + "/conf/datagen.properties");
       Properties props = new Properties();
       props.load(fis);
-      sg.generateData(props);
       fis.close();
+      sg.generateData(props);
     } catch (Exception e) {
       e.printStackTrace();
     }

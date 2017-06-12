@@ -10,22 +10,19 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 public class RowGenerator {
   private long expectedRows = 1;
   private List<ColumnGenerator> cgs = new ArrayList<ColumnGenerator>();
   private CreateTable createTableStat;
   private String partitionInfo;
+  private Properties columnProperties = new Properties();
   ColumnGenerator partitionGenerator = new ColumnGenerator();
 
+
   public RowGenerator(String sql) throws Exception {
-
     String createTableSql = sql;
-
     if (sql.toLowerCase().indexOf("partitioned by") != -1) {
       createTableSql = sql.substring(0, sql.toLowerCase().indexOf("partitioned by"));
       partitionInfo = sql.substring(createTableSql.length());
@@ -36,7 +33,6 @@ public class RowGenerator {
 
       ColumnDefinition cd = new ColumnDefinition();
       ColDataType columnType = new ColDataType();
-
 
       if (partitionColumnType.indexOf('(') != -1) {
         String arguments = partitionColumnType.substring(partitionColumnType.indexOf('(') + 1, partitionColumnType.lastIndexOf(')'));
@@ -51,23 +47,28 @@ public class RowGenerator {
       partitionGenerator.setColDesc(cd);
     }
 
-
-
-
     Statement st = CCJSqlParserUtil.parse(createTableSql);
     if (!(st instanceof CreateTable)) {
       throw new RuntimeException("Not a valid create table SQL");
     }
     this.createTableStat = (CreateTable) st;
 
+    getColumnProperties();
+
     for (ColumnDefinition columnDefinition : createTableStat.getColumnDefinitions()) {
       ColumnGenerator cg = new ColumnGenerator(columnDefinition);
-      String columnname = columnDefinition.getColumnName();
-      cg.setNullProportion(Double.parseDouble(getpropertyFromfile("datagen.column.null.proportion")));
+      String columnName = columnDefinition.getColumnName();
+      String value;
+      if ((value = columnProperties.getProperty(columnName + ".null.proportion")) != null) {
+        cg.setNullProportion(Double.parseDouble(value));
+      }
+
+      if ((value = columnProperties.getProperty(columnName + ".distinct.proportion")) != null) {
+        cg.setDistinctProportion(Double.parseDouble(value));
+      }
       cgs.add(cg);
     }
 
-    // List<String> options = createTableStat.
   }
 
   public void setExpectedRows(long expectedRows) {
@@ -75,7 +76,9 @@ public class RowGenerator {
   }
 
 
-  //how to estimate?
+  /*
+  * TODO: How to estimate bytes in row? Get detail size from column generator.
+  */
   public int getBytesInRow() {
     return cgs.size() * 16;
   }
@@ -120,6 +123,12 @@ public class RowGenerator {
     String property = props.getProperty(property_name);
     fis.close();
     return property;
+  }
+
+  public void getColumnProperties() throws IOException {
+    String project_root = System.getProperty("user.dir");
+    FileInputStream fis = new FileInputStream(project_root + "/engines/hive/conf/columns.properties");
+    columnProperties.load(fis);
   }
 
 }
