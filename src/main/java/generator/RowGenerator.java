@@ -5,6 +5,7 @@ import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.create.table.ColDataType;
 import net.sf.jsqlparser.statement.create.table.ColumnDefinition;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
+import org.apache.calcite.avatica.proto.Common;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -12,14 +13,21 @@ import org.apache.hadoop.fs.Path;
 import java.io.*;
 import java.util.*;
 
-public class RowGenerator {
+public class RowGenerator extends Thread {
   private long expectedRows = 1;
   private List<ColumnGenerator> cgs = new ArrayList<ColumnGenerator>();
   private CreateTable createTableStat;
   private String partitionInfo;
   private Properties columnProperties = new Properties();
   ColumnGenerator partitionGenerator = new ColumnGenerator();
+  private Properties props = new Properties();
+  private String targetPath;
+  private String filesystemHost;
 
+  public RowGenerator(String sql, String path) throws Exception {
+    this(sql);
+    this.targetPath = path;
+  }
 
   public RowGenerator(String sql) throws Exception {
     String createTableSql = sql;
@@ -75,35 +83,52 @@ public class RowGenerator {
     this.expectedRows = expectedRows;
   }
 
+  public void setTargetPath(String targetPath) {
+    this.targetPath = targetPath;
+  }
 
-  /*
-  * TODO: How to estimate bytes in row? Get detail size from column generator.
-  */
+  public void setProps(Properties props) {
+    this.props = props;
+  }
+
+  public void setFilesystemHost(String host) {
+    this.filesystemHost = host;
+  }
+
   public int getBytesInRow() {
     return cgs.size() * 16;
   }
 
-  public int generateData(Properties props) throws Exception {
+  @Override
+  public void run() {
     Configuration conf = new Configuration();
-    conf.set("fs.default.name", props.getProperty("datagen.fs.host"));
-    FileSystem hdfs = FileSystem.get(conf);
-    Path file = new Path(props.getProperty("datagen.output.dir"));
+    conf.set("fs.default.name", filesystemHost);
 
-    if (hdfs.exists(file)) {
-      hdfs.delete(file, true);
+    try {
+      FileSystem hdfs = FileSystem.get(conf);
+      Path file = new Path(targetPath);
+
+      if (hdfs.exists(file)) {
+        hdfs.delete(file, true);
+      }
+
+      OutputStream os = hdfs.create(file);
+      BufferedWriter br = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+
+      for (long i = 0; i < expectedRows; i++) {
+        br.write(nextRow() + "\n");
+      }
+      br.flush();
+      br.close();
+      hdfs.close();
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+  }
 
-    OutputStream os = hdfs.create(file);
-
-    BufferedWriter br = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-
-    for (long i = 0; i < expectedRows; i++) {
-      br.write(nextRow() + "\n");
-    }
-    br.flush();
-    br.close();
-    hdfs.close();
-    return 0;
+  public void produceRow() throws Exception {
+    start();
+    join();
   }
 
   public String nextRow() {
@@ -115,15 +140,6 @@ public class RowGenerator {
     return output;
   }
 
-  public String getpropertyFromfile(String property_name) throws IOException {
-    String project_root = System.getProperty("user.dir");
-    FileInputStream fis = new FileInputStream(project_root + "/conf/datagen.properties");
-    Properties props = new Properties();
-    props.load(fis);
-    String property = props.getProperty(property_name);
-    fis.close();
-    return property;
-  }
 
   public void getColumnProperties() throws IOException {
     String project_root = System.getProperty("user.dir");

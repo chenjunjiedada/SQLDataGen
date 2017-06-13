@@ -9,44 +9,59 @@ import java.util.List;
 import java.util.Properties;
 
 public class SchemaGenerator {
+  private final long MB = 1024 * 1024;
   private List<RowGenerator> rgs = new ArrayList<RowGenerator>();
   public long scale = 1;
-  public int addRowGenerator(RowGenerator rg) {
-    rgs.add(rg);
-    return 0;
-  }
+  private String host;
+  private String storePath;
 
-  public int setScale(int scale) {
+  public void setScale(int scale) {
     this.scale = scale;
-    return 0;
   }
 
-  public List<String> parseCreateTable(String sqlFile) throws IOException {
+  public void setHost(String host) {
+    this.host = host;
+  }
+
+  public void setStorePath(String path) {
+    this.storePath = path;
+  }
+
+  public List<String> parseCreateTable(String sqlFile) throws Exception {
     FileReader fileReader = new FileReader(sqlFile);
     BufferedReader bufferedReader = new BufferedReader(fileReader);
     List<String> sqls = new ArrayList<String>();
 
     String query = "";
     String line;
-    while ( (line = bufferedReader.readLine()) != null) {
-      query = query + line +"\n";
+    while ((line = bufferedReader.readLine()) != null) {
+      query = query + line + "\n";
       if (line.contains(";")) {
-        if(query.toLowerCase().contains("create external")) {
+        if (query.toLowerCase().contains("create external")) {
           sqls.add(query.substring(0, query.lastIndexOf(')') + 1) + ";");
         }
         query = "";
       }
     }
-
     return sqls;
   }
 
+  public void addRowGenerator(String createTable) throws Exception {
+    RowGenerator rg = new RowGenerator(createTable);
+    rg.setExpectedRows(scale * MB /rg.getBytesInRow());
+    rg.setFilesystemHost(host);
+    rg.setTargetPath(storePath);
+    rgs.add(rg);
+  }
 
-  public void generateData(Properties props) throws Exception {
-    // how to set expected rows for each table
+  public void generateData() throws Exception {
     for (RowGenerator rg : rgs) {
-      rg.generateData(props);
+      rg.produceRow();
     }
+  }
+
+  public void generateDataInParallel(){
+    //TODO
   }
 
   public Properties loadPropertiesFromFile(String file) throws IOException {
@@ -62,13 +77,19 @@ public class SchemaGenerator {
 
     try {
       SchemaGenerator sg = new SchemaGenerator();
-      List<String> createTableSqls = sg.parseCreateTable(project_root + "/engines/hive/population/hiveCreateLoad.sql");
+      Properties props =  sg.loadPropertiesFromFile(project_root + "/conf/datagen.properties");
+      sg.setScale(Integer.parseInt(props.getProperty("datagen.scale")));
+      sg.setHost(props.getProperty("datagen.filesystem.host"));
+      sg.setStorePath(props.getProperty("datagen.output.directory"));
 
-      RowGenerator rg = new RowGenerator(createTableSqls.get(0));
-      rg.setExpectedRows(sg.scale * 1024 * 1024 / rg.getBytesInRow());
-      sg.addRowGenerator(rg);
+      List<String> tables = sg.parseCreateTable(project_root + "/engines/hive/population/hiveCreateLoad.sql");
 
-      sg.generateData(sg.loadPropertiesFromFile(project_root + "/conf/datagen.properties"));
+      for (String table : tables) {
+        sg.addRowGenerator(table);
+      }
+
+      sg.generateData();
+
     } catch (Exception e) {
       e.printStackTrace();
     }
