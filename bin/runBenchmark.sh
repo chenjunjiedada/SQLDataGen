@@ -1,12 +1,18 @@
 #!/bin/bash
 export BENCHMARK_HOME=`cd $(dirname ${BASH_SOURCE[0]})/..&& pwd`
 
-source $BENCHMARK_HOME/engines/hive/conf/engineSettings.conf
+source $BENCHMARK_HOME/conf/global.conf
+if [ -z $OUTPUT_DIRECTORY ]
+then
+    echo "Please specify the datagen output directory"
+fi
+
+sed -i "s#^\( *datagen\.output\.directory *\).*#\1$OUTPUT_DIRECTORY#g" $BENCHMARK_HOME/engines/$ENGINE/conf/datagen.properties
 
 if [ $CLEAN_DATA = true ]
 then
-    $HIVE_HOME/bin/hive -e 'drop database if exists $DATABASE_NAME cascade'
-    $HADOOP_HOME/bin/hadoop fs -rm -r -f $DATAGEN_LOCATION
+    $HIVE_HOME/bin/hive -e "drop database if exists $DATABASE cascade"
+    $HADOOP_HOME/bin/hadoop fs -rm -r -f $OUTPUT_DIRECTORY
 fi
 
 if [ $DATA_GENERATION = true ]
