@@ -1,4 +1,4 @@
-CREATE EXTERNAL TABLE tbl_data_event_1d_temporary
+CREATE EXTERNAL TABLE IF NOT EXISTS tbl_data_event_1d_temporary
   ( record_id                  DECIMAL(23,0)
   , cdr_id                     STRING
   , location_code              DECIMAL(6,0)
@@ -94,7 +94,7 @@ CREATE EXTERNAL TABLE tbl_data_event_1d_temporary
   , load_id                    DECIMAL(22,0) 
   )
   ROW FORMAT DELIMITED FIELDS TERMINATED BY '|'
-  STORED AS TEXTFILE LOCATION '/user/hive/warehouse/tbl_data.db'
+  STORED AS TEXTFILE LOCATION '/datagen/output'
 ;
 
 DROP TABLE IF EXISTS tbl_data_event_1d;

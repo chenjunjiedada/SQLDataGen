@@ -77,7 +77,7 @@ public class SchemaGenerator {
 
     try {
       SchemaGenerator sg = new SchemaGenerator();
-      Properties props =  sg.loadPropertiesFromFile(project_root + "/conf/engineSettings.conf");
+      Properties props =  sg.loadPropertiesFromFile(project_root + "/engines/hive/conf/engineSettings.conf");
       sg.setScale(Integer.parseInt(props.getProperty("datagen.scale")));
       sg.setHost(props.getProperty("datagen.filesystem.host"));
       sg.setStorePath(props.getProperty("datagen.output.directory"));

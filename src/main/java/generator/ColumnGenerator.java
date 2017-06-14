@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 public class ColumnGenerator {
   public final int defaultScale = 10;
@@ -16,7 +17,7 @@ public class ColumnGenerator {
   public ColumnDefinition colDesc;
 
   public double nullProportion = 0.0;
-  public double distinctProportion = 1;
+  //public double distinctProportion = 1;
 
   public ColumnGenerator() throws Exception {
 
@@ -46,16 +47,18 @@ public class ColumnGenerator {
     }
   }
 
-  public boolean isPartitionColumn() {
-    return false;
-  }
-
   /*
       Generate random value in string according to column type.
       It also has to consider the null proportion.
    */
   public String nextValue() {
     if (Math.random() < nullProportion) return "";
+
+    /*
+    if (Math.random() > distinctProportion) {
+      // retrieve value from sampling data set;
+    }
+    */
 
     String type = colDesc.getColDataType().getDataType();
     if (type.toLowerCase().equals("int") || type.toLowerCase().equals("long")) {

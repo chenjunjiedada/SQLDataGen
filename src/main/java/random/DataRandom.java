@@ -14,6 +14,7 @@ import java.util.*;
  Load all dicts to memory for random read.
  */
 public class DataRandom {
+  private Random r = new Random();
 
   private HashMap<String, ArrayList<String>> dictMap = new HashMap<String, ArrayList<String>>();
 
@@ -47,7 +48,6 @@ public class DataRandom {
   }
 
   public String nextLong() {
-    Random r = new Random();
     return Long.toString(r.nextLong());
   }
 
@@ -74,16 +74,7 @@ public class DataRandom {
     return rand.toString();
   }
 
-  public String nextName() {
-    ArrayList<String> dict = dictMap.get("Given-Names.dict");
-    int count = dict.size();
-
-    Random r = new Random();
-    return dict.get(r.nextInt(count));
-  }
-
   public String nextString() {
-    Random r = new Random();
-    return RandomStringUtils.randomAlphabetic(r.nextInt(20));
+    return RandomStringUtils.randomAlphabetic(r.nextInt(8) + 8);
   }
 }
