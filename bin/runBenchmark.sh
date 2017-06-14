@@ -7,7 +7,9 @@ then
     echo "Please specify the datagen output directory"
 fi
 
-sed -i "s#^\( *datagen\.output\.directory *\).*#\1$OUTPUT_DIRECTORY#g" $BENCHMARK_HOME/engines/$ENGINE/conf/datagen.properties
+# Pass Global configurations to engine specific configuration.
+sed -i "s#^\( *datagen\.output\.directory *\).*#\1$OUTPUT_DIRECTORY#g" $BENCHMARK_HOME/engines/$ENGINE/conf/engineSettings.conf
+sed -i "s#^\( *datagen\.scale *\).*#\1$SCALE#g" $BENCHMARK_HOME/engines/$ENGINE/conf/engineSettings.conf
 
 if [ $CLEAN_DATA = true ]
 then
