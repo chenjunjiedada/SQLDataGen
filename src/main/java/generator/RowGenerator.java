@@ -21,8 +21,9 @@ public class RowGenerator extends Thread {
   private Properties columnProperties = new Properties();
   ColumnGenerator partitionGenerator = new ColumnGenerator();
   private Properties props = new Properties();
-  private String targetPath;
-  private String filesystemHost;
+  public String targetPath;
+  public String filesystemHost;
+  public String createTableSql;
 
   public RowGenerator(String sql, String path) throws Exception {
     this(sql);
@@ -30,7 +31,8 @@ public class RowGenerator extends Thread {
   }
 
   public RowGenerator(String sql) throws Exception {
-    String createTableSql = sql;
+    createTableSql = sql;
+
     if (sql.toLowerCase().indexOf("partitioned by") != -1) {
       createTableSql = sql.substring(0, sql.toLowerCase().indexOf("partitioned by"));
       partitionInfo = sql.substring(createTableSql.length());
@@ -82,6 +84,7 @@ public class RowGenerator extends Thread {
   public void setExpectedRows(long expectedRows) {
     this.expectedRows = expectedRows;
   }
+  public long getExpectedRows() {return expectedRows;}
 
   public void setTargetPath(String targetPath) {
     this.targetPath = targetPath;

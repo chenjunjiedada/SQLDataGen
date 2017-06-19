@@ -60,8 +60,18 @@ public class SchemaGenerator {
     }
   }
 
-  public void generateDataInParallel(){
-    //TODO
+  public void generateDataInParallel(int threads) throws Exception{
+    List<RowGenerator> splitedRg = new ArrayList<RowGenerator>();
+    for (RowGenerator rg : rgs) {
+      for (int i=0;i<threads;i++) {
+        RowGenerator tmp = new RowGenerator(rg.createTableSql);
+        tmp.setFilesystemHost(host);
+        tmp.setTargetPath(rg.targetPath+"-part-" + Integer.toString(i));
+        tmp.setExpectedRows(rg.getExpectedRows()/threads);
+        splitedRg.add(tmp);
+        tmp.produceRow();
+      }
+    }
   }
 
   public Properties loadPropertiesFromFile(String file) throws IOException {
@@ -88,7 +98,8 @@ public class SchemaGenerator {
         sg.addRowGenerator(table);
       }
 
-      sg.generateData();
+      //sg.generateData();
+      sg.generateDataInParallel(16);
 
     } catch (Exception e) {
       e.printStackTrace();

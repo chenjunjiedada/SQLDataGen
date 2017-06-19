@@ -52,7 +52,11 @@ public class ColumnGenerator {
       It also has to consider the null proportion.
    */
   public String nextValue() {
-    if (Math.random() < nullProportion) return "";
+    if (Double.compare(nullProportion, 0.0) > 0) {
+      if (Double.compare(Math.random(), nullProportion) < 0) {
+        return "";
+      }
+    }
 
     /*
     if (Math.random() > distinctProportion) {

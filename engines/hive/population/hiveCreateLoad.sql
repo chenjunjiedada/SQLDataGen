@@ -94,12 +94,20 @@ CREATE EXTERNAL TABLE IF NOT EXISTS tbl_data_event_1d_temporary
   , load_id                    DECIMAL(22,0) 
   )
   ROW FORMAT DELIMITED FIELDS TERMINATED BY '|'
-  STORED AS TEXTFILE LOCATION '/datagen/output'
+  STORED AS TEXTFILE LOCATION '/datagen/'
 ;
 
-DROP TABLE IF EXISTS tbl_data_event_1d;
-CREATE TABLE tbl_data_event_1d
+---DROP TABLE IF EXISTS tbl_data_event_1d;
+---CREATE TABLE tbl_data_event_1d
+---STORED AS parquet
+---AS
+---SELECT * FROM tbl_data_event_1d_temporary
+---;
+
+DROP TABLE IF EXISTS tbl_data_event_1d_bf;
+CREATE TABLE tbl_data_event_1d_bf
 STORED AS parquet
+TBLPROPERTIES ('parquet.enable.bloom.filter'='true', 'parquet.bloom.filter.enable.column.names'='user_num', 'parquet.bloom.filter.expected.entries'='1000000')
 AS
 SELECT * FROM tbl_data_event_1d_temporary
 ;
