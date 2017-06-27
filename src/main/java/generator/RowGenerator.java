@@ -116,14 +116,13 @@ public class RowGenerator extends Thread {
       }
 
       OutputStream os = hdfs.create(file);
-      BufferedWriter br = new BufferedWriter(new OutputStreamWriter(os));
+      BufferedWriter br = new BufferedWriter(new OutputStreamWriter(os), 32768);
 
       for (long i = 0; i < expectedRows; i++) {
         br.write(nextRow() + "\n");
       }
-      br.flush();
       br.close();
-//      hdfs.close();
+      hdfs.close();
     } catch (Exception e) {
       e.printStackTrace();
     }
