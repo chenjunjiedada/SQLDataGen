@@ -3,10 +3,8 @@ package random;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.math.RandomUtils;
 
-import java.io.*;
 import java.sql.Timestamp;
-import java.util.*;
-
+import java.util.Random;
 
 /*
  DataRandom is use to generate string according data type.
@@ -15,33 +13,12 @@ import java.util.*;
  */
 public class DataRandom {
   private Random r = new Random();
-
-  private HashMap<String, ArrayList<String>> dictMap = new HashMap<String, ArrayList<String>>();
+  public final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  public final String number = "0123456789";
 
   public DataRandom() {
   }
 
-  public void initDicts() throws IOException {
-    final String dir = System.getProperty("user.dir");
-
-    try {
-      File[] files = new File(dir + "/dicts/").listFiles();
-
-      for (File file : files) {
-        if (file.isFile() && file.getName().endsWith("dict")) {
-          BufferedReader br = new BufferedReader(new FileReader(file.getName()));
-          ArrayList<String> dict = new ArrayList<String>();
-          String line;
-          while ((line = br.readLine()) != null) {
-            dict.add(line);
-          }
-          dictMap.put(file.getName(), dict);
-        }
-      }
-    } catch (Exception e) {
-      throw new IOException(e.getMessage());
-    }
-  }
 
   public String nextLong(int scale) {
     return RandomStringUtils.random(scale, false, true);
@@ -59,9 +36,27 @@ public class DataRandom {
     return Double.toString(RandomUtils.nextDouble());
   }
 
+  public String nextNumber(int length, boolean not_start_with_zero) {
+    if (length <= 0) return "";
+
+    StringBuffer buf = new StringBuffer();
+
+    if (not_start_with_zero) {
+      buf.append(number.charAt(r.nextInt(8) + 1));
+      length --;
+      nextNumber(length, false);
+    }
+
+    for (int i=0; i<length; i++) {
+      buf.append(number.charAt(r.nextInt(9)));
+    }
+
+    return buf.toString();
+  }
+
   public String nextDecimal(int scale, int precision) {
-    String part1 = nextLong(scale - precision);
-    String part2 = nextLong(precision);
+    String part1 = nextNumber(scale - precision, true);
+    String part2 = nextNumber(precision, true);
     if (precision == 0) return part1;
     else return part1 + "." + part2;
   }
@@ -70,11 +65,20 @@ public class DataRandom {
     long start = Timestamp.valueOf("2000-01-01 00:00:00").getTime();
     long end = Timestamp.valueOf("2017-01-01 00:00:00").getTime();
     long diff = end - start + 1;
-    Timestamp rand = new Timestamp(start + (long)(Math.random() * diff));
+    Timestamp rand = new Timestamp(start + Math.abs(r.nextLong() % diff));
     return rand.toString();
   }
 
+  public String nextString(int length) {
+    StringBuffer buf = new StringBuffer();
+    for (int i = 0; i < length; i++) {
+      int num = r.nextInt(alphabet.length());
+      buf.append(alphabet.charAt(num));
+    }
+    return buf.toString();
+  }
+
   public String nextString() {
-    return RandomStringUtils.randomAlphabetic(r.nextInt(8) + 8);
+    return nextString(r.nextInt(20) + 4);
   }
 }
