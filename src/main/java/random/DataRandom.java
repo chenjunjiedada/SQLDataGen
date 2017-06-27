@@ -67,7 +67,7 @@ public class DataRandom {
   }
 
   public String nextTimestamp() {
-    long start = Timestamp.valueOf("2012-01-01 00:00:00").getTime();
+    long start = Timestamp.valueOf("2000-01-01 00:00:00").getTime();
     long end = Timestamp.valueOf("2017-01-01 00:00:00").getTime();
     long diff = end - start + 1;
     Timestamp rand = new Timestamp(start + (long)(Math.random() * diff));
