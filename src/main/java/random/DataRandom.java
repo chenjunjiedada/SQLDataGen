@@ -55,10 +55,11 @@ public class DataRandom {
   }
 
   public String nextDecimal(int scale, int precision) {
-    String part1 = nextNumber(scale - precision, true);
-    String part2 = nextNumber(precision, true);
-    if (precision == 0) return part1;
-    else return part1 + "." + part2;
+    if (precision == 0) {
+      return nextNumber(scale - precision, true);
+    } else {
+      return nextNumber(scale - precision, true) + nextNumber(precision, true);
+    }
   }
 
   public String nextTimestamp() {

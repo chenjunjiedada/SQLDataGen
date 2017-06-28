@@ -126,14 +126,10 @@ public class RowGenerator extends Thread {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    finally {
-
-    }
   }
 
   public void produceRow() throws Exception {
     start();
-//    join();
   }
 
   public String nextRow() {
