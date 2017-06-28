@@ -134,7 +134,8 @@ public class RowGenerator extends Thread {
         br.write(nextRow() + "\n");
       }
       br.close();
-//      hdfs.close();
+      hdfs.close();
+
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -142,7 +143,6 @@ public class RowGenerator extends Thread {
 
   public void produceRow() throws Exception {
     start();
-//    join();
   }
 
   public String nextRow() {

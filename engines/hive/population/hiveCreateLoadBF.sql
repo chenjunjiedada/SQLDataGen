@@ -1,8 +1,8 @@
 CREATE EXTERNAL TABLE IF NOT EXISTS tbl_data_event_1d_temporary
   ( record_id                  DECIMAL(23,0)
   , cdr_id                     STRING
-  , location_code              DECIMAL(6,0)
-  , system_id                  DECIMAL(5,0)
+  , location_code              DECIMAL(7,0)
+  , system_id                  DECIMAL(8,0)
   , clue_id                    STRING
   , hit_element                STRING
   , carrier_code               DECIMAL(2,0)
@@ -79,7 +79,7 @@ CREATE EXTERNAL TABLE IF NOT EXISTS tbl_data_event_1d_temporary
   , sms_count                  DECIMAL(2,0)
   , remark                     STRING
   , content_status             DECIMAL(6,0)
-  , voc_length                 DECIMAL(10,0)
+  , voc_length                 DECIMAL(9,0)
   , fax_page_count             DECIMAL(6,0)
   , com_over_cause             DECIMAL(6,0)
   , roam_type                  DECIMAL(1,0)

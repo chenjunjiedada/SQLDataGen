@@ -44,6 +44,7 @@
                 <version>1.4.0</version>
                 <configuration>
                     <mainClass>generator.SchemaGenerator</mainClass>
+                    <cleanupDaemonThreads>false</cleanupDaemonThreads>
                 </configuration>
             </plugin>
         </plugins>
