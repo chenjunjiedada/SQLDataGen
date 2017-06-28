@@ -122,7 +122,7 @@ public class RowGenerator extends Thread {
         br.write(nextRow() + "\n");
       }
       br.close();
-      hdfs.close();
+      //hdfs.close();
     } catch (Exception e) {
       e.printStackTrace();
     }
