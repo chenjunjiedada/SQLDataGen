@@ -76,6 +76,15 @@ public class RowGenerator extends Thread {
       if ((value = columnProperties.getProperty(columnName + ".distinct.proportion")) != null) {
         cg.setDistinctProportion(Double.parseDouble(value));
       }
+
+      if ((value = columnProperties.getProperty(columnName + ".length"))!=null) {
+        cg.length = Integer.parseInt(value);
+      }
+
+      if ((value = columnProperties.getProperty(columnName + ".isnumber"))!=null) {
+        cg.numberString = Boolean.parseBoolean(value);
+      }
+      
       cgs.add(cg);
     }
 

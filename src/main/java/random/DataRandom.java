@@ -42,13 +42,13 @@ public class DataRandom {
     StringBuffer buf = new StringBuffer();
 
     if (not_start_with_zero) {
-      buf.append(number.charAt(r.nextInt(8) + 1));
+      buf.append(number.charAt(r.nextInt(9) + 1));
       length --;
       nextNumber(length, false);
     }
 
     for (int i=0; i<length; i++) {
-      buf.append(number.charAt(r.nextInt(9)));
+      buf.append(number.charAt(r.nextInt(10)));
     }
 
     return buf.toString();
