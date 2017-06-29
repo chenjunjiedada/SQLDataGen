@@ -84,7 +84,7 @@ public class RowGenerator extends Thread {
       if ((value = columnProperties.getProperty(columnName + ".isnumber"))!=null) {
         cg.numberString = Boolean.parseBoolean(value);
       }
-      
+
       cgs.add(cg);
     }
 

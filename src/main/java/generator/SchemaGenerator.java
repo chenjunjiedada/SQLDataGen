@@ -102,7 +102,7 @@ public class SchemaGenerator {
         sg.addRowGenerator(table);
       }
 
-      sg.generateDataInParallel(24);
+      sg.generateDataInParallel(32);
 
     } catch (Exception e) {
       e.printStackTrace();

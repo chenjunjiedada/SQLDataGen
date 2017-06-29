@@ -100,7 +100,9 @@ CREATE EXTERNAL TABLE IF NOT EXISTS tbl_data_event_1d_temporary
 DROP TABLE IF EXISTS tbl_data_event_1d_bf;
 CREATE TABLE tbl_data_event_1d_bf
 STORED AS parquet
-TBLPROPERTIES ('parquet.enable.bloom.filter'='true', 'parquet.bloom.filter.enable.column.names'='location_code', 'parquet.bloom.filter.expected.entries'='1000000')
+TBLPROPERTIES ('parquet.enable.bloom.filter'='true',
+'parquet.bloom.filter.enable.column.names'='user_num,device_id,clue_id,user_imei',
+'parquet.bloom.filter.expected.entries'='1000000,1000000,1000000,1000000')
 AS
 SELECT * FROM tbl_data_event_1d_temporary
 ;
