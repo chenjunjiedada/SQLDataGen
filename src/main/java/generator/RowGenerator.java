@@ -11,6 +11,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class RowGenerator extends Thread {
@@ -19,11 +20,18 @@ public class RowGenerator extends Thread {
   private CreateTable createTableStat;
   private String partitionInfo;
   private Properties columnProperties = new Properties();
+  private double distinctProportion = 0.2;
+  private HashMap<String,Integer> repeateMap;
+  private ArrayList<String> repeateList;
+  private Random rd = new Random();
+
   ColumnGenerator partitionGenerator = new ColumnGenerator();
   private Properties props = new Properties();
   public String targetPath;
   public String filesystemHost;
   public String createTableSql;
+//  public double distinctProportion = 0.05;
+
 
   public RowGenerator(String sql, String path) throws Exception {
     this(sql);
@@ -31,6 +39,8 @@ public class RowGenerator extends Thread {
   }
 
   public RowGenerator(String sql) throws Exception {
+    repeateMap = new HashMap<String, Integer>();
+    repeateList = new ArrayList<String>();
     createTableSql = sql;
 
     if (sql.toLowerCase().indexOf("partitioned by") != -1) {
@@ -65,6 +75,8 @@ public class RowGenerator extends Thread {
 
     getColumnProperties();
 
+    distinctProportion = Double.valueOf(columnProperties.getProperty("user_num.distinct.proportion"));
+    System.out.println(distinctProportion);
     for (ColumnDefinition columnDefinition : createTableStat.getColumnDefinitions()) {
       ColumnGenerator cg = new ColumnGenerator(columnDefinition);
       String columnName = columnDefinition.getColumnName();
@@ -131,7 +143,8 @@ public class RowGenerator extends Thread {
         br.write(nextRow() + "\n");
       }
       br.close();
-      //hdfs.close();
+      hdfs.close();
+
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -144,8 +157,13 @@ public class RowGenerator extends Thread {
   public String nextRow() {
     String output = "";
     for (ColumnGenerator cg : cgs) {
-      output += cg.nextValue();
-      output += "|";
+      if (cg.colDesc.getColumnName()=="user_num"){
+        output += repeatebysettings(cg);
+        output += "|";
+      }else{
+        output += cg.nextValue();
+        output += "|";
+      }
     }
     return output;
   }
@@ -155,6 +173,30 @@ public class RowGenerator extends Thread {
     String project_root = System.getProperty("user.dir");
     FileInputStream fis = new FileInputStream(project_root + "/engines/hive/conf/columns.properties");
     columnProperties.load(fis);
+  }
+
+  public String repeatebysettings(ColumnGenerator cg) {
+    String str;
+    if (Math.random() > distinctProportion){
+      if (repeateList.size() < 1000){
+        str = cg.nextValue();
+        repeateMap.put(str,new Double(Math.abs(rd.nextGaussian()*50)).intValue());
+        repeateList.add(str);
+        return str;
+      }else{
+        int i = rd.nextInt(1000);
+        str = repeateList.get(i);
+        if (repeateMap.get(str)==0){
+          repeateMap.remove(str);
+          repeateList.remove(i);
+        }else{
+          repeateMap.put(str,repeateMap.get(str)-1);
+        }
+        return str;
+      }
+    }else{
+      return cg.nextValue();
+    }
   }
 
 }
