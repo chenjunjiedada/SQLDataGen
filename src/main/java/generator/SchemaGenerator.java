@@ -66,11 +66,15 @@ public class SchemaGenerator {
       for (int i=0;i<threads;i++) {
         RowGenerator tmp = new RowGenerator(rg.createTableSql);
         tmp.setFilesystemHost(host);
-        tmp.setTargetPath(rg.targetPath+"-part-" + Integer.toString(i));
+        tmp.setTargetPath(rg.targetPath+"/part-" + Integer.toString(i));
         tmp.setExpectedRows(rg.getExpectedRows()/threads);
         splitedRg.add(tmp);
         tmp.produceRow();
       }
+    }
+
+    for (RowGenerator rg: splitedRg) {
+      rg.join();
     }
   }
 
@@ -98,8 +102,7 @@ public class SchemaGenerator {
         sg.addRowGenerator(table);
       }
 
-      //sg.generateData();
-      sg.generateDataInParallel(16);
+      sg.generateDataInParallel(32);
 
     } catch (Exception e) {
       e.printStackTrace();

@@ -25,7 +25,7 @@ fi
 
 if [ $CREATETABLE_LOADDATA = true ]
 then
-    echo "Load engine settings"
+    echo "Load data into database"
     $HIVE_HOME/bin/hive -i $BENCHMARK_HOME/engines/hive/conf/engineSettings.sql -f $BENCHMARK_HOME/engines/hive/population/hiveCreateLoad.sql
 fi
 if [ $POWER_TEST = true ]

@@ -14,6 +14,8 @@ public class ColumnGenerator {
 
   public DataRandom random = new DataRandom();
   public ColumnDefinition colDesc;
+  public int length = 0;
+  public boolean numberString = false;
 
   public double nullProportion = 0.0;
   //public double distinctProportion = 1;
@@ -81,6 +83,9 @@ public class ColumnGenerator {
       }
       return random.nextDecimal(scale, precision);
     } else if (type.toLowerCase().equals("string")) {
+      if (numberString == true) {
+        return random.nextNumber(length, true);
+      }
       return random.nextString();
     } else if (type.toLowerCase().equals("timestamp")) {
       return random.nextTimestamp();

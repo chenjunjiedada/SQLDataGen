@@ -88,6 +88,15 @@ public class RowGenerator extends Thread {
       if ((value = columnProperties.getProperty(columnName + ".distinct.proportion")) != null) {
         cg.setDistinctProportion(Double.parseDouble(value));
       }
+
+      if ((value = columnProperties.getProperty(columnName + ".length"))!=null) {
+        cg.length = Integer.parseInt(value);
+      }
+
+      if ((value = columnProperties.getProperty(columnName + ".isnumber"))!=null) {
+        cg.numberString = Boolean.parseBoolean(value);
+      }
+
       cgs.add(cg);
     }
 
@@ -134,7 +143,6 @@ public class RowGenerator extends Thread {
         br.write(nextRow() + "\n");
       }
       br.close();
-//      hdfs.close();
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -142,7 +150,6 @@ public class RowGenerator extends Thread {
 
   public void produceRow() throws Exception {
     start();
-//    join();
   }
 
   public String nextRow() {

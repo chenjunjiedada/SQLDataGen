@@ -42,23 +42,24 @@ public class DataRandom {
     StringBuffer buf = new StringBuffer();
 
     if (not_start_with_zero) {
-      buf.append(number.charAt(r.nextInt(8) + 1));
+      buf.append(number.charAt(r.nextInt(9) + 1));
       length --;
       nextNumber(length, false);
     }
 
     for (int i=0; i<length; i++) {
-      buf.append(number.charAt(r.nextInt(9)));
+      buf.append(number.charAt(r.nextInt(10)));
     }
 
     return buf.toString();
   }
 
   public String nextDecimal(int scale, int precision) {
-    String part1 = nextNumber(scale - precision, true);
-    String part2 = nextNumber(precision, true);
-    if (precision == 0) return part1;
-    else return part1 + "." + part2;
+    if (precision == 0) {
+      return nextNumber(scale - precision, true);
+    } else {
+      return nextNumber(scale - precision, true) + nextNumber(precision, true);
+    }
   }
 
   public String nextTimestamp() {
