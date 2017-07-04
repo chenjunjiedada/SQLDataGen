@@ -19,21 +19,21 @@ public class ColumnGenerator {
 
   private double nullProportion = 0.0;
   private double distinctProportion = 0.0;
-  private HashMap<String,Integer> repeateMap;
-  private ArrayList<String> repeateList;
-  private int listSize = 1000;
+  private HashMap<String,Integer> repeatMap;
+  private ArrayList<String> repeatList;
+  private int repeatValueListsize = 1000;
   private Random rd;
 
   public ColumnGenerator() throws Exception {
-    repeateMap = new HashMap<String, Integer>();
-    repeateList = new ArrayList<String>();
+    repeatMap = new HashMap<String, Integer>();
+    repeatList = new ArrayList<String>();
     rd = new Random();
   }
 
   public ColumnGenerator(ColumnDefinition colDescriptor) {
     this.colDesc = colDescriptor;
-    repeateMap = new HashMap<String, Integer>();
-    repeateList = new ArrayList<String>();
+    repeatMap = new HashMap<String, Integer>();
+    repeatList = new ArrayList<String>();
     rd = new Random();
   }
 
@@ -57,8 +57,11 @@ public class ColumnGenerator {
     }
   }
 
-  public void setListSize(int listSize) {
-    this.listSize = listSize;
+  public void setRepeatValueListsize(int repeatValueListsize) {
+    if (repeatValueListsize<1){
+      this.repeatValueListsize=1000;
+    } else
+      this.repeatValueListsize = repeatValueListsize;
   }
 
   /*
@@ -75,22 +78,22 @@ public class ColumnGenerator {
     if (Double.compare(distinctProportion, 0.0) > 0) {
       if (Double.compare(Math.random(), distinctProportion) < 0) {
         String str;
-        if (repeateList.size() < listSize){
+        if (repeatList.size() < repeatValueListsize){
           str = getRandomValue();
-          //calculate the amount of repeated words by random normal distribution stored into HashMap
-          repeateMap.put(str,new Double(Math.abs(rd.nextGaussian()*50)).intValue());
-          repeateList.add(str);
+          //calculate the amount of repeatd words by random normal distribution stored into HashMap
+          repeatMap.put(str,new Double(Math.abs(rd.nextGaussian()*50)).intValue());
+          repeatList.add(str);
           return str;
         } else {
-          int i = rd.nextInt(listSize);
-          str = repeateList.get(i);
-          if(repeateMap.get(str) == null) {
-            repeateList.remove(i);
-          } else if (repeateMap.get(str) == 0) {
-            repeateMap.remove(str);
-            repeateList.remove(i);
+          int i = rd.nextInt(repeatValueListsize);
+          str = repeatList.get(i);
+          if(repeatMap.get(str) == null) {
+            repeatList.remove(i);
+          } else if (repeatMap.get(str) == 0) {
+            repeatMap.remove(str);
+            repeatList.remove(i);
           } else {
-            repeateMap.replace(str, repeateMap.get(str) - 1);
+            repeatMap.replace(str, repeatMap.get(str) - 1);
           }
           return str;
         }
