@@ -18,15 +18,23 @@ public class ColumnGenerator {
   public boolean numberString = false;
 
   public double nullProportion = 0.0;
-  //public double distinctProportion = 1;
-    public Random rd = new Random();
+  private double distinctProportion = 0.0;
+  private HashMap<String,Integer> repeateMap;
+  private ArrayList<String> repeateList;
+
+    public Random rd;
 
   public ColumnGenerator() throws Exception {
-
+    repeateMap = new HashMap<String, Integer>();
+    repeateList = new ArrayList<String>();
+    rd = new Random();
   }
 
   public ColumnGenerator(ColumnDefinition colDescriptor) {
     this.colDesc = colDescriptor;
+    repeateMap = new HashMap<String, Integer>();
+    repeateList = new ArrayList<String>();
+    rd = new Random();
   }
 
   public void setColDesc(ColumnDefinition cd) {
@@ -43,7 +51,7 @@ public class ColumnGenerator {
 
   public void setDistinctProportion(double proportion) throws InvalidParameterException {
     if (proportion <= 1.0 || proportion > 0) {
-      nullProportion = proportion;
+      distinctProportion = proportion;
     } else {
       throw new InvalidParameterException("Invalid distinct proportion");
     }
@@ -60,18 +68,40 @@ public class ColumnGenerator {
       }
     }
 
-    /*
-    if (Math.random() > distinctProportion) {
-      // retrieve value from sampling data set;
+    if (Double.compare(distinctProportion, 0.0) > 0) {
+      if (Double.compare(Math.random(), distinctProportion) < 0) {
+        String str;
+        if (repeateList.size() < 1000){
+          str = returnValuebyType();
+          repeateMap.put(str,new Double(Math.abs(rd.nextGaussian()*50)).intValue());
+          repeateList.add(str);
+          return str;
+        }else {
+          int i = rd.nextInt(1000);
+          str = repeateList.get(i);
+          if(repeateMap.get(str) == null) {
+            repeateList.remove(i);
+          }else if (repeateMap.get(str) == 0) {
+            repeateMap.remove(str);
+            repeateList.remove(i);
+          } else {
+            repeateMap.replace(str, repeateMap.get(str) - 1);
+          }
+          return str;
+        }
+      }
     }
-    */
 
-    String type = colDesc.getColDataType().getDataType();
-    if (type.toLowerCase().equals("int") || type.toLowerCase().equals("long")) {
+    return  returnValuebyType();
+  }
+
+  public String returnValuebyType(){
+    String type = colDesc.getColDataType().getDataType().toLowerCase();
+    if (type.equals("int") || type.equals("long")) {
       return random.nextLong();
-    } else if (type.toLowerCase().equals("double") || type.toLowerCase().equals("float")) {
+    } else if (type.equals("double") || type.equals("float")) {
       return random.nextDouble();
-    } else if (type.toLowerCase().startsWith("decimal")) {
+    } else if (type.startsWith("decimal")) {
       List<String> params = colDesc.getColDataType().getArgumentsStringList();
       Integer scale = Integer.parseInt(params.get(0));
       Integer precision = Integer.parseInt(params.get(1));
@@ -82,15 +112,14 @@ public class ColumnGenerator {
         precision = defaultPrecision;
       }
       return random.nextDecimal(scale, precision);
-    } else if (type.toLowerCase().equals("string")) {
+    } else if (type.equals("string")) {
       if (numberString == true) {
         return random.nextNumber(length, true);
       }
       return random.nextString();
-    } else if (type.toLowerCase().equals("timestamp")) {
+    } else if (type.equals("timestamp")) {
       return random.nextTimestamp();
     }
-
     return "";
   }
   
