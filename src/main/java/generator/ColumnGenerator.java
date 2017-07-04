@@ -17,12 +17,12 @@ public class ColumnGenerator {
   public int length = 0;
   public boolean numberString = false;
 
-  public double nullProportion = 0.0;
+  private double nullProportion = 0.0;
   private double distinctProportion = 0.0;
   private HashMap<String,Integer> repeateMap;
   private ArrayList<String> repeateList;
-
-    public Random rd;
+  private int listSize = 1000;
+  private Random rd;
 
   public ColumnGenerator() throws Exception {
     repeateMap = new HashMap<String, Integer>();
@@ -57,10 +57,14 @@ public class ColumnGenerator {
     }
   }
 
+  public void setListSize(int listSize) {
+    this.listSize = listSize;
+  }
+
   /*
-      Generate random value in string according to column type.
-      It also has to consider the null proportion.
-   */
+        Generate random value in string according to column type.
+        It also has to consider the null proportion.
+     */
   public String nextValue() {
     if (Double.compare(nullProportion, 0.0) > 0) {
       if (Double.compare(Math.random(), nullProportion) < 0) {
@@ -71,17 +75,18 @@ public class ColumnGenerator {
     if (Double.compare(distinctProportion, 0.0) > 0) {
       if (Double.compare(Math.random(), distinctProportion) < 0) {
         String str;
-        if (repeateList.size() < 1000){
-          str = returnValuebyType();
+        if (repeateList.size() < listSize){
+          str = getRandomValue();
+          //calculate the amount of repeated words by random normal distribution stored into HashMap
           repeateMap.put(str,new Double(Math.abs(rd.nextGaussian()*50)).intValue());
           repeateList.add(str);
           return str;
-        }else {
-          int i = rd.nextInt(1000);
+        } else {
+          int i = rd.nextInt(listSize);
           str = repeateList.get(i);
           if(repeateMap.get(str) == null) {
             repeateList.remove(i);
-          }else if (repeateMap.get(str) == 0) {
+          } else if (repeateMap.get(str) == 0) {
             repeateMap.remove(str);
             repeateList.remove(i);
           } else {
@@ -92,10 +97,10 @@ public class ColumnGenerator {
       }
     }
 
-    return  returnValuebyType();
+    return  getRandomValue();
   }
 
-  public String returnValuebyType(){
+  public String getRandomValue(){
     String type = colDesc.getColDataType().getDataType().toLowerCase();
     if (type.equals("int") || type.equals("long")) {
       return random.nextLong();

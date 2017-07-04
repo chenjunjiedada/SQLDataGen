@@ -88,6 +88,9 @@ public class RowGenerator extends Thread {
         cg.numberString = Boolean.parseBoolean(value);
       }
 
+      if ((value = columnProperties.getProperty(columnName + ".listsize"))!=null) {
+        cg.setListSize(Integer.getInteger(value));
+      }
       cgs.add(cg);
     }
 
@@ -146,41 +149,16 @@ public class RowGenerator extends Thread {
   public String nextRow() {
     String output = "";
     for (ColumnGenerator cg : cgs) {
-        output += cg.nextValue();
-        output += "|";
+      output += cg.nextValue();
+      output += "|";
     }
     return output;
   }
-
 
   public void getColumnProperties() throws IOException {
     String project_root = System.getProperty("user.dir");
     FileInputStream fis = new FileInputStream(project_root + "/engines/hive/conf/columns.properties");
     columnProperties.load(fis);
   }
-
-//  public String repeatebysettings(ColumnGenerator cg) {
-//    String str;
-//    if (Math.random() > distinctProportion){
-//      if (repeateList.size() < 1000){
-//        str = cg.nextValue();
-//        repeateMap.put(str,new Double(Math.abs(rd.nextGaussian()*50)).intValue());
-//        repeateList.add(str);
-//        return str;
-//      }else{
-//        int i = rd.nextInt(1000);
-//        str = repeateList.get(i);
-//        if (repeateMap.get(str)==0){
-//          repeateMap.remove(str);
-//          repeateList.remove(i);
-//        }else{
-//          repeateMap.put(str,repeateMap.get(str)-1);
-//        }
-//        return str;
-//      }
-//    }else{
-//      return cg.nextValue();
-//    }
-//  }
 
 }
