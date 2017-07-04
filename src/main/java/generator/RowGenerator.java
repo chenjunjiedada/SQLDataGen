@@ -89,7 +89,7 @@ public class RowGenerator extends Thread {
       }
 
       if ((value = columnProperties.getProperty(columnName + ".listsize"))!=null) {
-        cg.setListSize(Integer.getInteger(value));
+        cg.setListSize(Integer.parseInt(value));
       }
       cgs.add(cg);
     }
