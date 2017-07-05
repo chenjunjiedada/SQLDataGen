@@ -11,6 +11,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class RowGenerator extends Thread {
@@ -19,11 +20,13 @@ public class RowGenerator extends Thread {
   private CreateTable createTableStat;
   private String partitionInfo;
   private Properties columnProperties = new Properties();
+
   ColumnGenerator partitionGenerator = new ColumnGenerator();
   private Properties props = new Properties();
   public String targetPath;
   public String filesystemHost;
   public String createTableSql;
+
 
   public RowGenerator(String sql, String path) throws Exception {
     this(sql);
@@ -85,6 +88,9 @@ public class RowGenerator extends Thread {
         cg.numberString = Boolean.parseBoolean(value);
       }
 
+      if ((value = columnProperties.getProperty(columnName + ".listsize"))!=null) {
+        cg.setRepeatValueListsize(Integer.parseInt(value));
+      }
       cgs.add(cg);
     }
 
@@ -131,7 +137,6 @@ public class RowGenerator extends Thread {
         br.write(nextRow() + "\n");
       }
       br.close();
-      //hdfs.close();
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -149,7 +154,6 @@ public class RowGenerator extends Thread {
     }
     return output;
   }
-
 
   public void getColumnProperties() throws IOException {
     String project_root = System.getProperty("user.dir");
