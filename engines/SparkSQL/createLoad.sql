@@ -94,15 +94,12 @@ CREATE EXTERNAL TABLE IF NOT EXISTS tbl_data_event_1d_temporary
   , load_id                    DECIMAL(22,0) 
   )
   ROW FORMAT DELIMITED FIELDS TERMINATED BY '|'
-  STORED AS TEXTFILE LOCATION '/datagen-0628/output/'
+  STORED AS TEXTFILE LOCATION '/datagen-0702/output/'
 ;
 
-DROP TABLE IF EXISTS tbl_data_event_1d_bf;
-CREATE TABLE tbl_data_event_1d_bf
+DROP TABLE IF EXISTS sparksql_bf_tbl;
+CREATE TABLE sparksql_bf_tbl
 STORED AS parquet
-TBLPROPERTIES ('parquet.enable.bloom.filter'='true',
-'parquet.bloom.filter.enable.column.names'='netcell_id,device_id,clue_id,card_id',
-'parquet.bloom.filter.expected.entries'='100000,1000000,1000000,10000')
 AS
 SELECT * FROM tbl_data_event_1d_temporary
 ;

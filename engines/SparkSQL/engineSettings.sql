@@ -1,4 +1,29 @@
-CREATE EXTERNAL TABLE IF NOT EXISTS tbl_data_event_1d_temporary
+set parquet.block.size=134217728;
+set dfs.block.size=134217728;
+set spark.sql.parquet.enable.bloom.filter=true;
+set spark.sql.parquet.bloom.filter.enabled=true;
+set parquet.enable.bloom.filter=true;
+set parquet.bloom.filter.enabled=true;
+---set spark.sql.parquet.bloom.filter.expected.entries=10000,1000000,100000;
+---set spark.sql.parquet.bloom.filter.col.name=card_id,device_id,clue_id;
+
+
+CREATE DATABASE IF NOT EXISTS bloom_filter_data;
+use bloom_filter_data;
+
+CREATE TEMPORARY VIEW hive_tbl
+USING org.apache.spark.sql.parquet
+OPTIONS (
+      path "hdfs:///user/hive/warehouse/bloom_filter_data.db/tbl_data_event_1d"
+);
+
+CREATE TEMPORARY VIEW hive_bf_tbl
+USING org.apache.spark.sql.parquet
+OPTIONS (
+      path "hdfs:///user/hive/warehouse/bloom_filter_data.db/tbl_data_event_1d_bf"
+);
+
+CREATE EXTERNAL TABLE IF NOT EXISTS spark_tbl
   ( record_id                  DECIMAL(23,0)
   , cdr_id                     STRING
   , location_code              DECIMAL(7,0)
@@ -93,16 +118,9 @@ CREATE EXTERNAL TABLE IF NOT EXISTS tbl_data_event_1d_temporary
   , on_time                    TIMESTAMP
   , load_id                    DECIMAL(22,0) 
   )
-  ROW FORMAT DELIMITED FIELDS TERMINATED BY '|'
-  STORED AS TEXTFILE LOCATION '/datagen-0628/output/'
-;
+  STORED AS PARQUET
+  LOCATION 'hdfs:///user/hive/warehouse/bloom_filter_data.db/tbl_data_event_1d_bf'
+  TBLPROPERTIES ('parquet.enable.bloom.filter'='true',
+  'parquet.bloom.filter.enable.column.names'='netcell_id,device_id,clue_id,card_id',
+  'parquet.bloom.filter.expected.entries'='100000,1000000,1000000,10000');
 
-DROP TABLE IF EXISTS tbl_data_event_1d_bf;
-CREATE TABLE tbl_data_event_1d_bf
-STORED AS parquet
-TBLPROPERTIES ('parquet.enable.bloom.filter'='true',
-'parquet.bloom.filter.enable.column.names'='netcell_id,device_id,clue_id,card_id',
-'parquet.bloom.filter.expected.entries'='100000,1000000,1000000,10000')
-AS
-SELECT * FROM tbl_data_event_1d_temporary
-;
