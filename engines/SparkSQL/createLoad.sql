@@ -100,9 +100,6 @@ CREATE EXTERNAL TABLE IF NOT EXISTS tbl_data_event_1d_temporary
 DROP TABLE IF EXISTS sparksql_bf_tbl;
 CREATE TABLE sparksql_bf_tbl
 STORED AS parquet
-TBLPROPERTIES ('parquet.enable.bloom.filter'='true',
-'parquet.bloom.filter.enable.column.names'='netcell_id,device_id,clue_id,card_id',
-'parquet.bloom.filter.expected.entries'='100000,1000000,1000000,10000')
 AS
 SELECT * FROM tbl_data_event_1d_temporary
 ;
