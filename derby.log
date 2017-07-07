@@ -1,7 +1,7 @@
 ----------------------------------------------------------------
-Wed Jul 05 09:46:58 CST 2017:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-015d-106d-cede-0000244bd7f0 
-on database directory /root/BloomFilter/datagen/metastore_db with class loader org.apache.spark.sql.hive.client.IsolatedClientLoader$$anon$1@36120a8b 
+Thu Jul 06 16:38:09 CST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-015d-170c-9f02-00002487cca0 
+on database directory /root/BloomFilter/datagen/metastore_db with class loader org.apache.spark.sql.hive.client.IsolatedClientLoader$$anon$1@6e78177b 
 Loaded from file:/opt/Beaver/spark-2.1.0-bfsql/jars/derby-10.12.1.1.jar
 java.vendor=Oracle Corporation
 java.runtime.version=1.8.0_112-b15

@@ -4,7 +4,7 @@ set parquet.enable.bloom.filter=true;
 set parquet.bloom.filter.enabled=true;
 set hive.optimize.ppd=true;
 set hive.optimize.index.filter=true;
-set hive.execution.engine=spark;
+set hive.execution.engine=mr;
 
 CREATE DATABASE IF NOT EXISTS bloom_filter_data;
 use bloom_filter_data;

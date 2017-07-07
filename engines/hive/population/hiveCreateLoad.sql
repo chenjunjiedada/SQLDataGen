@@ -94,7 +94,7 @@ CREATE EXTERNAL TABLE IF NOT EXISTS tbl_data_event_1d_temporary
   , load_id                    DECIMAL(22,0) 
   )
   ROW FORMAT DELIMITED FIELDS TERMINATED BY '|'
-  STORED AS TEXTFILE LOCATION '/datagen-0628/output/'
+  STORED AS TEXTFILE LOCATION '/datagen/0705/'
 ;
 
 DROP TABLE IF EXISTS tbl_data_event_1d;

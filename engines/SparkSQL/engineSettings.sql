@@ -17,12 +17,12 @@ OPTIONS (
       path "hdfs:///user/hive/warehouse/bloom_filter_data.db/tbl_data_event_1d"
 );
 
-CREATE TEMPORARY VIEW hive_bf_tbl
-USING org.apache.spark.sql.parquet
-OPTIONS (
-      path "hdfs:///user/hive/warehouse/bloom_filter_data.db/tbl_data_event_1d_bf"
-);
-
+---CREATE TEMPORARY VIEW hive_bf_tbl
+---USING org.apache.spark.sql.parquet
+---OPTIONS (
+---      path "hdfs:///user/hive/warehouse/bloom_filter_data.db/tbl_data_event_1d_bf"
+---);
+---
 CREATE EXTERNAL TABLE IF NOT EXISTS spark_tbl
   ( record_id                  DECIMAL(23,0)
   , cdr_id                     STRING
