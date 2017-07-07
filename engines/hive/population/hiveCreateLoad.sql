@@ -1,3 +1,4 @@
+drop table tbl_data_event_1d_temporary;
 CREATE EXTERNAL TABLE IF NOT EXISTS tbl_data_event_1d_temporary
   ( record_id                  DECIMAL(23,0)
   , cdr_id                     STRING
@@ -91,10 +92,11 @@ CREATE EXTERNAL TABLE IF NOT EXISTS tbl_data_event_1d_temporary
   , card_id                    STRING
   , time_out                   DECIMAL(1,0)
   , on_time                    TIMESTAMP
-  , load_id                    DECIMAL(22,0) 
+  , load_id                    DECIMAL(22,0)
   )
   ROW FORMAT DELIMITED FIELDS TERMINATED BY '|'
-  STORED AS TEXTFILE LOCATION '/datagen/0705/'
+  STORED AS TEXTFILE
+  LOCATION ${location}
 ;
 
 DROP TABLE IF EXISTS tbl_data_event_1d;

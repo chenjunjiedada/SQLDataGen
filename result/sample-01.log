@@ -1,0 +1,10 @@
+which: no hbase in (/opt/Beaver/maven/bin:/opt/Beaver/maven/sbin:/opt/Beaver/jdk/bin:/opt/Beaver/jdk/sbin:/opt/Beaver/spark/bin:/opt/Beaver/hive/bin:/opt/Beaver/hive/sbin:/opt/Beaver/hadoop/bin:/opt/Beaver/hadoop/sbin:/opt/Beaver/maven/bin:/opt/Beaver/maven/sbin:/opt/Beaver/jdk/bin:/opt/Beaver/jdk/sbin:/opt/Beaver/hive/bin:/opt/Beaver/hive/sbin:/opt/Beaver/hadoop/bin:/opt/Beaver/hadoop/sbin:/opt/Beaver/maven/bin:/opt/Beaver/maven/sbin:/opt/Beaver/jdk/bin:/opt/Beaver/jdk/sbin:/opt/Beaver/hive/bin:/opt/Beaver/hive/sbin:/opt/Beaver/hadoop/bin:/opt/Beaver/hadoop/sbin:/usr/lib64/qt-3.3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin)
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/Beaver/hive-2.3.0.BF/lib/log4j-slf4j-impl-2.6.2.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/Beaver/hive-2.3.0.BF/lib/slf4j-log4j12-1.7.16.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/Beaver/hadoop-2.7.3/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+
+Logging initialized using configuration in file:/opt/Beaver/hive-2.3.0.BF/config/2017-07-03-15-59-35/hive-log4j2.properties Async: true
+FAILED: SemanticException org.apache.hadoop.hive.ql.metadata.HiveException: java.lang.RuntimeException: Unable to instantiate org.apache.hadoop.hive.ql.metadata.SessionHiveMetaStoreClient

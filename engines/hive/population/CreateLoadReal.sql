@@ -1,3 +1,4 @@
+drop table tbl_data_event_1d_temporary;
 CREATE EXTERNAL TABLE IF NOT EXISTS tbl_data_event_1d_temporary
   ( record_id                  DECIMAL(23,0)
   , cdr_id                     STRING
@@ -91,19 +92,17 @@ CREATE EXTERNAL TABLE IF NOT EXISTS tbl_data_event_1d_temporary
   , card_id                    STRING
   , time_out                   DECIMAL(1,0)
   , on_time                    TIMESTAMP
-  , load_id                    DECIMAL(22,0) 
+  , load_id                    DECIMAL(22,0)
   )
   ROW FORMAT DELIMITED FIELDS TERMINATED BY '|'
   STORED AS TEXTFILE
-  LOCATION ${location}
+  LOCATION '/datagen/0707/'
 ;
 
-DROP TABLE IF EXISTS tbl_data_event_1d_bf;
-CREATE TABLE tbl_data_event_1d_bf
+DROP TABLE IF EXISTS tbl_data_event_1d;
+CREATE TABLE tbl_data_event_1d
 STORED AS parquet
-TBLPROPERTIES ('parquet.enable.bloom.filter'='true',
-'parquet.bloom.filter.enable.column.names'='netcell_id,device_id,clue_id,card_id',
-'parquet.bloom.filter.expected.entries'='100000,1000000,1000000,10000')
 AS
 SELECT * FROM tbl_data_event_1d_temporary
 ;
+

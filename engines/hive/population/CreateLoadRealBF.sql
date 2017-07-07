@@ -95,7 +95,7 @@ CREATE EXTERNAL TABLE IF NOT EXISTS tbl_data_event_1d_temporary
   )
   ROW FORMAT DELIMITED FIELDS TERMINATED BY '|'
   STORED AS TEXTFILE
-  LOCATION ${location}
+  LOCATION '/datagen/0707/'
 ;
 
 DROP TABLE IF EXISTS tbl_data_event_1d_bf;
