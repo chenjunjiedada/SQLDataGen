@@ -60,10 +60,10 @@ public class SchemaGenerator {
     }
   }
 
-  public void generateDataInParallel(int threads) throws Exception{
+  public void generateDataInParallel(int threads, int start) throws Exception{
     List<RowGenerator> splitedRg = new ArrayList<RowGenerator>();
     for (RowGenerator rg : rgs) {
-      for (int i=0;i<threads;i++) {
+      for (int i=start;i<start+threads;i++) {
         RowGenerator tmp = new RowGenerator(rg.createTableSql);
         tmp.setFilesystemHost(host);
         tmp.setTargetPath(rg.targetPath+"/part-" + Integer.toString(i));
@@ -102,7 +102,9 @@ public class SchemaGenerator {
         sg.addRowGenerator(table);
       }
 
-      sg.generateDataInParallel(32);
+      sg.generateDataInParallel(Integer.parseInt(props.getProperty("datagen.thread.number")),
+        Integer.parseInt(props.getProperty("datagen.output.index.start")));
+
 
     } catch (Exception e) {
       e.printStackTrace();

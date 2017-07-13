@@ -1,7 +1,7 @@
-set parquet.block.size=134217728;
-set dfs.block.size=134217728;
-set spark.sql.parquet.enable.bloom.filter=true;
-set spark.sql.parquet.bloom.filter.enabled=true;
+--set parquet.block.size=134217728;
+--set dfs.block.size=134217728;
+--set spark.sql.parquet.enable.bloom.filter=true;
+--set spark.sql.parquet.bloom.filter.enabled=true;
 set parquet.enable.bloom.filter=true;
 set parquet.bloom.filter.enabled=true;
 ---set spark.sql.parquet.bloom.filter.expected.entries=10000,1000000,100000;
@@ -14,15 +14,15 @@ use bloom_filter_data;
 CREATE TEMPORARY VIEW hive_tbl
 USING org.apache.spark.sql.parquet
 OPTIONS (
-      path "hdfs:///user/hive/warehouse/bloom_filter_data.db/tbl_data_event_1d"
+      path "hdfs:///user/hive/warehouse/bloom_filter_data.db/tbl_data_event"
 );
 
----CREATE TEMPORARY VIEW hive_bf_tbl
----USING org.apache.spark.sql.parquet
----OPTIONS (
----      path "hdfs:///user/hive/warehouse/bloom_filter_data.db/tbl_data_event_1d_bf"
----);
----
+CREATE TEMPORARY VIEW hive_bf_tbl
+USING org.apache.spark.sql.parquet
+OPTIONS (
+      path "hdfs:///user/hive/warehouse/bloom_filter_data.db/tbl_data_event_bf"
+);
+
 CREATE EXTERNAL TABLE IF NOT EXISTS spark_tbl
   ( record_id                  DECIMAL(23,0)
   , cdr_id                     STRING
@@ -119,7 +119,7 @@ CREATE EXTERNAL TABLE IF NOT EXISTS spark_tbl
   , load_id                    DECIMAL(22,0) 
   )
   STORED AS PARQUET
-  LOCATION 'hdfs:///user/hive/warehouse/bloom_filter_data.db/tbl_data_event_1d_bf'
+  LOCATION 'hdfs:///user/hive/warehouse/bloom_filter_data.db/tbl_data_event_bf'
   TBLPROPERTIES ('parquet.enable.bloom.filter'='true',
   'parquet.bloom.filter.enable.column.names'='netcell_id,device_id,clue_id,card_id',
   'parquet.bloom.filter.expected.entries'='100000,1000000,1000000,10000');
