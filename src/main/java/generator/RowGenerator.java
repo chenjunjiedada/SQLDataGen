@@ -23,15 +23,10 @@ public class RowGenerator extends Thread {
 
   ColumnGenerator partitionGenerator = new ColumnGenerator();
   private Properties props = new Properties();
-  public String targetPath;
+  public List<String> targetFiles = new ArrayList<String>();
   public String filesystemHost;
   public String createTableSql;
 
-
-  public RowGenerator(String sql, String path) throws Exception {
-    this(sql);
-    this.targetPath = path;
-  }
 
   public RowGenerator(String sql) throws Exception {
     createTableSql = sql;
@@ -101,8 +96,8 @@ public class RowGenerator extends Thread {
   }
   public long getExpectedRows() {return expectedRows;}
 
-  public void setTargetPath(String targetPath) {
-    this.targetPath = targetPath;
+  public void setTargetPath(List<String> targetFiles) {
+    this.targetFiles = targetFiles;
   }
 
   public void setProps(Properties props) {
@@ -124,10 +119,15 @@ public class RowGenerator extends Thread {
 
     try {
       FileSystem hdfs = FileSystem.get(conf);
-      Path file = new Path(targetPath);
+      Path file = null;
+      for (String filename : targetFiles) {
+        if (!hdfs.exists(new Path(filename))) {
+          file = new Path(filename);
+        }
+      }
 
-      if (hdfs.exists(file)) {
-        hdfs.delete(file, true);
+      if (file == null) {
+        return;
       }
 
       OutputStream os = hdfs.create(file);

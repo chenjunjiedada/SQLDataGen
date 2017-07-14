@@ -11,7 +11,8 @@ import java.util.Properties;
 public class SchemaGenerator {
   private final long MB = 1024 * 1024;
   private List<RowGenerator> rgs = new ArrayList<RowGenerator>();
-  public long scale = 1;
+  private List<String> targetFiles = new ArrayList<String>();
+  public int scale = 1;
   private String host;
   private String storePath;
 
@@ -63,7 +64,7 @@ public class SchemaGenerator {
   public void generateDataInParallel(int threads, int start) throws Exception{
     List<RowGenerator> splitedRg = new ArrayList<RowGenerator>();
     for (RowGenerator rg : rgs) {
-      for (int i=start;i<start+threads;i++) {
+      for (int i=start; i<start+threads; i++) {
         RowGenerator tmp = new RowGenerator(rg.createTableSql);
         tmp.setFilesystemHost(host);
         tmp.setTargetPath(rg.targetPath+"/part-" + Integer.toString(i));
@@ -86,6 +87,13 @@ public class SchemaGenerator {
     return props;
   }
 
+  public void generateTargetFiles(int scale) {
+    int parts = scale/1000;
+    for (int i=0 ; i<parts; i++) {
+      targetFiles.add("part-" + Integer.toString(i));
+    }
+  }
+
   public static void main(String[] args) {
     String project_root = System.getProperty("user.dir");
 
@@ -93,6 +101,8 @@ public class SchemaGenerator {
       SchemaGenerator sg = new SchemaGenerator();
       Properties props =  sg.loadPropertiesFromFile(project_root + "/engines/hive/conf/engineSettings.conf");
       sg.setScale(Integer.parseInt(props.getProperty("datagen.scale")));
+      sg.generateTargetFiles(sg.scale);
+      
       sg.setHost(props.getProperty("datagen.filesystem.host"));
       sg.setStorePath(props.getProperty("datagen.output.directory"));
 

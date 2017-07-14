@@ -80,6 +80,6 @@ public class DataRandom {
   }
 
   public String nextString() {
-    return nextString(r.nextInt(20) + 4);
+    return nextString(r.nextInt(8) + 4);
   }
 }
