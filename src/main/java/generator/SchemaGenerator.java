@@ -63,7 +63,7 @@ public class SchemaGenerator {
   public void generateDataInParallel(int threads, int start) throws Exception{
     List<RowGenerator> splitedRg = new ArrayList<RowGenerator>();
     for (RowGenerator rg : rgs) {
-      for (int i=start;i<start+threads;i++) {
+      for (int i=start; i<start+threads; i++) {
         RowGenerator tmp = new RowGenerator(rg.createTableSql);
         tmp.setFilesystemHost(host);
         tmp.setTargetPath(rg.targetPath+"/part-" + Integer.toString(i));
