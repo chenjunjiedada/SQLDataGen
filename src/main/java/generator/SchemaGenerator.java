@@ -11,7 +11,6 @@ import java.util.Properties;
 public class SchemaGenerator {
   private final long MB = 1024 * 1024;
   private List<RowGenerator> rgs = new ArrayList<RowGenerator>();
-  private List<String> targetFiles = new ArrayList<String>();
   public int scale = 1;
   private String host;
   private String storePath;
@@ -27,6 +26,8 @@ public class SchemaGenerator {
   public void setStorePath(String path) {
     this.storePath = path;
   }
+
+  static public int id = 0;
 
   public List<String> parseCreateTable(String sqlFile) throws Exception {
     FileReader fileReader = new FileReader(sqlFile);
@@ -51,14 +52,7 @@ public class SchemaGenerator {
     RowGenerator rg = new RowGenerator(createTable);
     rg.setExpectedRows(scale * MB /rg.getBytesInRow());
     rg.setFilesystemHost(host);
-    rg.setTargetPath(storePath);
     rgs.add(rg);
-  }
-
-  public void generateData() throws Exception {
-    for (RowGenerator rg : rgs) {
-      rg.produceRow();
-    }
   }
 
   public void generateDataInParallel(int threads, int start) throws Exception{
@@ -67,7 +61,8 @@ public class SchemaGenerator {
       for (int i=start; i<start+threads; i++) {
         RowGenerator tmp = new RowGenerator(rg.createTableSql);
         tmp.setFilesystemHost(host);
-        tmp.setTargetPath(rg.targetPath+"/part-" + Integer.toString(i));
+        tmp.targetFile = storePath + "/part-" + Integer.toString(SchemaGenerator.id + start);
+        SchemaGenerator.id ++;
         tmp.setExpectedRows(rg.getExpectedRows()/threads);
         splitedRg.add(tmp);
         tmp.produceRow();
@@ -87,13 +82,6 @@ public class SchemaGenerator {
     return props;
   }
 
-  public void generateTargetFiles(int scale) {
-    int parts = scale/1000;
-    for (int i=0 ; i<parts; i++) {
-      targetFiles.add("part-" + Integer.toString(i));
-    }
-  }
-
   public static void main(String[] args) {
     String project_root = System.getProperty("user.dir");
 
@@ -101,8 +89,6 @@ public class SchemaGenerator {
       SchemaGenerator sg = new SchemaGenerator();
       Properties props =  sg.loadPropertiesFromFile(project_root + "/engines/hive/conf/engineSettings.conf");
       sg.setScale(Integer.parseInt(props.getProperty("datagen.scale")));
-      sg.generateTargetFiles(sg.scale);
-      
       sg.setHost(props.getProperty("datagen.filesystem.host"));
       sg.setStorePath(props.getProperty("datagen.output.directory"));
 
