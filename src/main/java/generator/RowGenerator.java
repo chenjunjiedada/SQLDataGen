@@ -20,18 +20,11 @@ public class RowGenerator extends Thread {
   private CreateTable createTableStat;
   private String partitionInfo;
   private Properties columnProperties = new Properties();
-
   ColumnGenerator partitionGenerator = new ColumnGenerator();
-  private Properties props = new Properties();
-  public String targetPath;
+  public String targetFile;
   public String filesystemHost;
   public String createTableSql;
-
-
-  public RowGenerator(String sql, String path) throws Exception {
-    this(sql);
-    this.targetPath = path;
-  }
+  public String tableName;
 
   public RowGenerator(String sql) throws Exception {
     createTableSql = sql;
@@ -93,22 +86,12 @@ public class RowGenerator extends Thread {
       }
       cgs.add(cg);
     }
-
   }
 
   public void setExpectedRows(long expectedRows) {
     this.expectedRows = expectedRows;
   }
   public long getExpectedRows() {return expectedRows;}
-
-  public void setTargetPath(String targetPath) {
-    this.targetPath = targetPath;
-  }
-
-  public void setProps(Properties props) {
-    this.props = props;
-  }
-
   public void setFilesystemHost(String host) {
     this.filesystemHost = host;
   }
@@ -124,15 +107,9 @@ public class RowGenerator extends Thread {
 
     try {
       FileSystem hdfs = FileSystem.get(conf);
-      Path file = new Path(targetPath);
-
-      if (hdfs.exists(file)) {
-        hdfs.delete(file, true);
-      }
-
-      OutputStream os = hdfs.create(file);
+      Path targetPath = new Path(targetFile);
+      OutputStream os = hdfs.create(targetPath);
       BufferedWriter br = new BufferedWriter(new OutputStreamWriter(os), 32768);
-
       for (long i = 0; i < expectedRows; i++) {
         br.write(nextRow() + "\n");
       }

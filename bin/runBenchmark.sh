@@ -14,7 +14,7 @@ sed -i "s#^\( *datagen\.scale *\).*#\1$SCALE#g" $BENCHMARK_HOME/engines/$ENGINE/
 if [ $CLEAN_DATA = true ]
 then
     $HIVE_HOME/bin/hive -e "drop database if exists $DATABASE cascade"
-#    $HADOOP_HOME/bin/hadoop fs -rm -r -f $OUTPUT_DIRECTORY
+    #$HADOOP_HOME/bin/hadoop fs -rm -r -f $OUTPUT_DIRECTORY
 fi
 
 if [ $DATA_GENERATION = true ]
