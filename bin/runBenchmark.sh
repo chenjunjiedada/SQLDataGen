@@ -10,17 +10,19 @@ fi
 # Pass Global configurations to engine specific configuration.
 sed -i "s#^\( *datagen\.output\.directory *\).*#\1$OUTPUT_DIRECTORY#g" $BENCHMARK_HOME/engines/$ENGINE/conf/engineSettings.conf
 sed -i "s#^\( *datagen\.scale *\).*#\1$SCALE#g" $BENCHMARK_HOME/engines/$ENGINE/conf/engineSettings.conf
+sed -i "s#^\( *datagen\.filesystem\.host *\).*#\1$HDFS#g" $BENCHMARK_HOME/engines/$ENGINE/conf/engineSettings.conf
 
 if [ $CLEAN_DATA = true ]
 then
-    $HIVE_HOME/bin/hive -e "drop database if exists $DATABASE cascade"
-#    $HADOOP_HOME/bin/hadoop fs -rm -r -f $OUTPUT_DIRECTORY
+    #$HIVE_HOME/bin/hive -e "drop database if exists $DATABASE cascade"
+    $HADOOP_HOME/bin/hadoop fs -rm -r -f $OUTPUT_DIRECTORY
 fi
 
 if [ $DATA_GENERATION = true ]
 then
     echo 'Generate data'
-    mvn clean install -q && mvn exec:java -q
+    export MAVEN_OPTS="-Xms256m -Xmx4g"
+    mvn clean install -q && mvn exec:java
 fi
 
 if [ $LOADDATA = true ]
