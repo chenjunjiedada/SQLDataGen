@@ -42,7 +42,15 @@ public class WordCount {
                 context.write(key,NullWritable.get());
         }
     }
-
+    /**
+     * customized partition function,decide which reducer to join by the first 4 numbers in string 
+     */
+    public static class ShufflePartitioner extends Partitioner<Text,NullWritable> {
+        @Override
+        public int getPartition(Text text, NullWritable nullWritable, int numReduceTasks) {
+            return Integer.valueOf(text.toString().substring(0,4))/(10000/numReduceTasks+1);
+        }
+    }
 
     public static final String NUM_MAP_TASKS = "random.generator.map.tasks";
     public static final String NUM_RECORDS_PER_TASK = "random.generator.num.records.per.map.task";
@@ -297,7 +305,8 @@ public class WordCount {
         Properties props =  loadPropertiesFromFile(project_root + "/engines/hive/conf/engineSettings.conf");
 
         int numMapTasks = Integer.valueOf(props.getProperty("NUM_MAP_TASKS"));
-        int numRecordsPerTask = Integer.valueOf(props.getProperty("NUM_MAP_TASKS"));
+        int numRecordsPerTask = Integer.valueOf(props.getProperty("NUM_RECORDS_PER_TASK"));
+	int numReduceTasks = Integer.valueOf(props.getProperty("NUM_REDUCE_TASKS"));
         Configuration conf = new Configuration();
         conf.set("fs.defaultFS",props.getProperty("datagen.filesystem.host"));
 //        conf.set("mapreduce.framework.name","yarn");
@@ -308,13 +317,14 @@ public class WordCount {
         Job job = Job.getInstance(conf);
         job.setJarByClass(WordCount.class);
         job.setMapperClass(ShuffleMapper.class);
+	job.setPartitionerClass(ShufflePartitioner.class);
 //        job.setCombinerClass(ShuffleReducer.class);
         job.setReducerClass(ShuffleReducer.class);
         job.getConfiguration().setInt(NUM_MAP_TASKS, numMapTasks);
         job.getConfiguration().setInt(NUM_RECORDS_PER_TASK, numRecordsPerTask);
-//        RandomStackOverflowInputFormat.setNumMapTasks(job, numMapTasks);
-//        RandomStackOverflowInputFormat.setNumRecordPerTask(job, numRecordsPerTask);
-        job.setNumReduceTasks(1);
+//        RandomInputFormat.setNumMapTasks(job, numMapTasks);
+//        RandomInputFormat.setNumRecordPerTask(job, numRecordsPerTask);
+        job.setNumReduceTasks(numReduceTasks);
         job.setInputFormatClass(RandomInputFormat.class);
         TextOutputFormat.setOutputPath(job, outputDir);
         job.setOutputFormatClass(TextOutputFormat.class);
