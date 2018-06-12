@@ -124,7 +124,7 @@ public class ColumnGenerator {
       if (numberString == true) {
         return random.nextNumber(length, true);
       }
-      return random.nextString();
+      return random.nextString(length);
     } else if (type.equals("timestamp")) {
       return random.nextTimestamp();
     }
