@@ -87,19 +87,19 @@ public class SchemaGenerator {
 
     try {
       SchemaGenerator sg = new SchemaGenerator();
-      Properties props =  sg.loadPropertiesFromFile(project_root + "/engines/hive/conf/engineSettings.conf");
-      sg.setScale(Integer.parseInt(props.getProperty("datagen.scale")));
-      sg.setHost(props.getProperty("datagen.filesystem.host"));
-      sg.setStorePath(props.getProperty("datagen.output.directory"));
+      Properties props =  sg.loadPropertiesFromFile(project_root + "/conf/datagen.conf");
+      sg.setScale(Integer.parseInt(props.getProperty("datagen_scale")));
+      sg.setHost(props.getProperty("datagen_output_fs_host"));
+      sg.setStorePath(props.getProperty("datagen_output_dir"));
 
-      List<String> tables = sg.parseCreateTable(project_root + "/engines/hive/population/hiveCreateLoad.sql");
+      List<String> tables = sg.parseCreateTable(project_root + "/sql/target/CreateTable.sql");
 
       for (String table : tables) {
         sg.addRowGenerator(table);
       }
 
-      sg.generateDataInParallel(Integer.parseInt(props.getProperty("datagen.thread.number")),
-        Integer.parseInt(props.getProperty("datagen.output.index.start")));
+      sg.generateDataInParallel(Integer.parseInt(props.getProperty("datagen_thread_number")),
+        Integer.parseInt(props.getProperty("datagen_output_index_start")));
 
 
     } catch (Exception e) {

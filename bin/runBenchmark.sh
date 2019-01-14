@@ -1,15 +1,10 @@
 #!/bin/bash
 export BENCHMARK_HOME=`cd $(dirname ${BASH_SOURCE[0]})/..&& pwd`
-
-source $BENCHMARK_HOME/conf/global.conf
-if [ -z $OUTPUT_DIRECTORY ]
-then
-    echo "Please specify the datagen output directory"
-fi
+source $BENCHMARK_HOME/conf/datagen.conf
 
 # Pass Global configurations to engine specific configuration.
-sed -i "s#^\( *datagen\.output\.directory *\).*#\1$OUTPUT_DIRECTORY#g" $BENCHMARK_HOME/engines/$ENGINE/conf/engineSettings.conf
-sed -i "s#^\( *datagen\.scale *\).*#\1$SCALE#g" $BENCHMARK_HOME/engines/$ENGINE/conf/engineSettings.conf
+#sed -i "s#^\( *datagen\.output\.directory *\).*#\1$OUTPUT_DIRECTORY#g" $BENCHMARK_HOME/engines/$ENGINE/conf/engineSettings.conf
+#sed -i "s#^\( *datagen\.scale *\).*#\1$SCALE#g" $BENCHMARK_HOME/engines/$ENGINE/conf/engineSettings.conf
 
 if [ $CLEAN_DATA = true ]
 then
@@ -17,27 +12,35 @@ then
     $HADOOP_HOME/bin/hadoop fs -rm -r -f $OUTPUT_DIRECTORY
 fi
 
-if [ $DATA_GENERATION = true ]
+if [ $GENERATE_DATA = true ]
 then
-    echo 'Generate data'
+    echo 'Generating data...'
     export MAVEN_OPTS="-Xms256m -Xmx4g"
     mvn clean install -q && mvn exec:java
 fi
 
-if [ $LOADDATA = true ]
+if [ $LOAD_DATA = true ]
 then
-    if [ $ENGINE == "hive" ] 
+    if [ $ENGINE = hive ] 
     then
         echo "Load data into tbl_data_event"
-        sed -e "s#\${location}#\'$OUTPUT_DIRECTORY\'#g" $BENCHMARK_HOME/engines/hive/population/hiveCreateLoad.sql > $BENCHMARK_HOME/engines/hive/population/CreateLoadReal.sql
-        $HIVE_HOME/bin/hive -i $BENCHMARK_HOME/engines/hive/conf/engineSettings.sql -f $BENCHMARK_HOME/engines/hive/population/CreateLoadReal.sql
+        sed -i "s#\${location}#\'$OUTPUT_DIRECTORY\'#g" $BENCHMARK_HOME/engines/hive/population/hiveCreateLoad.sql
+        $HIVE_HOME/bin/hive -i $BENCHMARK_HOME/engines/hive/conf/engineSettings.sql \ 
+        -f $BENCHMARK_HOME/engines/hive/population/CreateLoadReal.sql
         echo "Load data into tbl_data_event_bf"
-        sed -e "s#\${location}#\'$OUTPUT_DIRECTORY\'#g" $BENCHMARK_HOME/engines/hive/population/hiveCreateLoadBF.sql >  $BENCHMARK_HOME/engines/hive/population/CreateLoadRealBF.sql
-        $HIVE_HOME/bin/hive -i $BENCHMARK_HOME/engines/hive/conf/engineSettings.sql -f $BENCHMARK_HOME/engines/hive/population/CreateLoadRealBF.sql
+        sed -i "s#\${location}#\'$OUTPUT_DIRECTORY\'#g" $BENCHMARK_HOME/engines/hive/population/hiveCreateLoadBF.sql
+        $HIVE_HOME/bin/hive -i $BENCHMARK_HOME/engines/hive/conf/engineSettings.sql \ 
+        -f $BENCHMARK_HOME/engines/hive/population/CreateLoadRealBF.sql
+    elif [ $ENGINE = SparkSQL ]
+    then
+        echo "Load data into data warehouse via SparkSql"
+        sed -e "s#\${location}#\'$datagen_output_dir\'#g" $BENCHMARK_HOME/sql/$ENGINE/CreateTableTemplate.sql > $BENCHMARK_HOME/sql/target/CreateTable.sql
+        $SPARK_HOME/bin/spark-sql -i $BENCHMARK_HOME/sql/$ENGINE/init.sql -f $BENCHMARK_HOME/sql/target/CreateTable.sql
     fi
+
 fi
 
-if [ $SAMPLING = true ]
+if [ $SAMPLE_DATA = true ]
 then
     echo "Generate values for search "
     for file in $BENCHMARK_HOME/engines/hive/sample/*

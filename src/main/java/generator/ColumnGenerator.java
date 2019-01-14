@@ -76,7 +76,7 @@ public class ColumnGenerator {
     }
 
     if (Double.compare(distinctProportion, 0.0) > 0) {
-      if (Double.compare(Math.random(), distinctProportion) < 0) {
+      if (Double.compare(Math.random(), distinctProportion) > 0) {
         String str;
         if (repeatList.size() < repeatValueListsize){
           str = getRandomValue();

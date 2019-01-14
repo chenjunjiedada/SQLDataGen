@@ -134,7 +134,7 @@ public class RowGenerator extends Thread {
 
   public void getColumnProperties() throws IOException {
     String project_root = System.getProperty("user.dir");
-    FileInputStream fis = new FileInputStream(project_root + "/engines/hive/conf/columns.properties");
+    FileInputStream fis = new FileInputStream(project_root + "/sql/columns.properties");
     columnProperties.load(fis);
   }
 
